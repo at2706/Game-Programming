@@ -1,0 +1,23 @@
+<TextureAtlas imagePath="sprites.png">
+
+<SubTexture name="font36_J.png" x="0" y="66" width="64" height="28"/>
+<SubTexture name="font39_M.png" x="51" y="129" width="32" height="32"/>
+<SubTexture name="font42_P.png" x="94" y="227" width="32" height="27"/>
+
+<SubTexture name="font51_Y.png" x="48" y="196" width="46" height="29"/>
+<SubTexture name="font55_2.png" x="48" y="227" width="44" height="26"/>
+
+<SubTexture name="font63_.png" x="0" y="196" width="46" height="28"/>
+
+<SubTexture name="font66_.png" x="0" y="226" width="46" height="22"/>
+<SubTexture name="font73_.png" x="0" y="129" width="49" height="32"/>
+
+<SubTexture name="font84_.png" x="0" y="163" width="49" height="31"/>
+
+<SubTexture name="font95_.png" x="0" y="0" width="81" height="64"/>
+
+<SubTexture name="font96_.png" x="0" y="96" width="51" height="31"/>
+
+<SubTexture name="font97_.png" x="66" y="66" width="13" height="32"/>
+
+</TextureAtlas>
