@@ -19,22 +19,6 @@ Entity::~Entity(){
 void Entity::draw(){
 	sprite->draw(u, v, x, y, width, height, scale);
 
-	/*glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, sprite->textureID);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	glTranslatef(x, y, 0.0);
-	glRotatef(rotation, 0.0, 0.0, 1.0);
-	GLfloat quad[] = { width * -0.5f, height * 0.5f, width * -0.5f, height * -0.5f, width * 0.5f, height * -0.5f, width * 0.5f, height * 0.5f };
-	glVertexPointer(2, GL_FLOAT, 0, quad);
-	glEnableClientState(GL_VERTEX_ARRAY);
-	GLfloat quadUVs[] = { 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0 };
-	glTexCoordPointer(2, GL_FLOAT, 0, quadUVs);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glDrawArrays(GL_QUADS, 0, 4);
-	glDisable(GL_TEXTURE_2D);*/
 }
 
 //void Entity::loadTexture(const char *image_path){
@@ -76,24 +60,24 @@ void Entity::move(GLfloat degree, GLfloat e){
 }
 //Box-box collision
 GLboolean Entity::collision(Entity *e){
-	GLfloat top = y + (height * scale / 2);
-	GLfloat bot = y - (height * scale / 2);
-	GLfloat left = x - (width * scale / 2);
-	GLfloat right = x + (width * scale / 2);
+	GLfloat top = y + ((height * scale) / 2);
+	GLfloat bot = y - ((height * scale) / 2);
+	GLfloat left = x - ((width * scale) / 2);
+	GLfloat right = x + ((width * scale) / 2);
 
-	GLfloat etop = e->y + (e->height * scale / 2);
-	GLfloat ebot = e->y - (e->height * scale / 2);
-	GLfloat eleft = e->x - (e->width * scale / 2);
-	GLfloat eright = e->x + (e->width * scale / 2);
+	GLfloat etop = e->y + ((e->height * e->scale) / 2);
+	GLfloat ebot = e->y - ((e->height * e->scale) / 2);
+	GLfloat eleft = e->x - ((e->width * e->scale) / 2);
+	GLfloat eright = e->x + ((e->width * e->scale) / 2);
 
 	return !(bot > etop || top < ebot || left > eright || right < eleft);
 }
 //Box-point Collision
 GLboolean Entity::collision(GLfloat posX, GLfloat posY){
-	GLfloat top = y + (height / 2);
-	GLfloat bot = y - (height / 2);
-	GLfloat left = x - (width / 2);
-	GLfloat right = x + (width / 2);
+	GLfloat top = y + ((height * scale) / 2);
+	GLfloat bot = y - ((height * scale) / 2);
+	GLfloat left = x - ((width * scale) / 2);
+	GLfloat right = x + ((width * scale) / 2);
 
 	return !((posX > left && posX < right) || (posY > bot && posY < top));
 }

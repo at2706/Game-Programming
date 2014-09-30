@@ -1,7 +1,7 @@
 #pragma once
 #include "Entity.h"
-#define MAX_BULLETS 40
-#define MAX_LASERS 40
+#define MAX_BULLETS 20
+#define MAX_LASERS 8
 
 using namespace std;
 class GameEngine

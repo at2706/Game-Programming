@@ -21,7 +21,7 @@ GameEngine::GameEngine(){
 
 	bulletIndex = 0;
 	spaceship = new Entity(charSheet, 0, 96 / 256.0f, 0.0f, -0.9f,
-		51.0f / 128.0f, 31.0f / 256.0f, 0.0, 2.0f, 0.25f);
+		51.0f / 128.0f, 31.0f / 256.0f, 0.0, 2.0f, 0.2f);
 
 	startButton = new Entity(charSheet, 0, 0, 0.0f, 0.0f,
 		81.0f / 128.0f, 64.0f / 256.0f, 0.0, 2.0f, 0.25f);
@@ -61,10 +61,10 @@ GLboolean GameEngine::ProcessEvents(){
 			state = STATE_GAME_LEVEL;
 	}
 	// Keyboard Events
-	if (keys[SDL_SCANCODE_RIGHT] && spaceship->x < 0.85f) {
+	if (keys[SDL_SCANCODE_RIGHT] && spaceship->x < 0.8f) {
 		spaceship->move(0.0f, elapsed);
 	}
-	else if (keys[SDL_SCANCODE_LEFT] && spaceship->x > -0.85f) {
+	else if (keys[SDL_SCANCODE_LEFT] && spaceship->x > -0.8f) {
 		spaceship->move(180.0f, elapsed);
 	}
 
@@ -73,7 +73,7 @@ GLboolean GameEngine::ProcessEvents(){
 			bullets[bulletIndex] = new Entity(charSheet, 66 / 128.0f, 66 / 256.0f, spaceship->x, spaceship->y,
 				13.0f / 128.0f, 32.0f / 256.0f, 0.0, BULLET_SPEED, 0.1f);
 			lastBullet = 0.0f;
-			if (bulletIndex < MAX_BULLETS) bulletIndex++;
+			if (bulletIndex < MAX_BULLETS - 1) bulletIndex++;
 			else bulletIndex = 0;
 		}
 	}
@@ -103,12 +103,12 @@ GLvoid GameEngine::Update(){
 		}
 		break;
 	case STATE_GAME_LEVEL:
-		if (alienLastLaser > alienFireDelay){
+		if (alienLastLaser > alienFireDelay && entities[alienFiringIndex] != NULL){
 			lasers[alienLaserIndex] = new Entity(charSheet, 66 / 128.0f, 66 / 256.0f, entities[alienFiringIndex]->x, entities[alienFiringIndex]->y,
-				13.0f / 128.0f, 32.0f / 256.0f, 0.0, BULLET_SPEED, 0.1f);
+				13.0f / 128.0f, 32.0f / 256.0f,  0.0, BULLET_SPEED, 0.1f);
 			alienLastLaser = 0.0f;
 			alienFiringIndex = rand() % entities.size();
-			if (alienLaserIndex < MAX_LASERS) alienLaserIndex++;
+			if (alienLaserIndex < MAX_LASERS - 1) alienLaserIndex++;
 			else alienLaserIndex = 0;
 		}
 		alienLastLaser += elapsed;
@@ -179,13 +179,14 @@ GLvoid GameEngine::Update(){
 				}
 
 				for (vector<Entity*>::iterator it = entities.begin(); it != entities.end(); ++it) {
-					if (*it != nullptr && !(*it)->dead && bullets[i] != NULL && (*it)->collision(bullets[i])){
+					if (bullets[i] != NULL && (*it)->collision(bullets[i])){
 						delete bullets[i];
 						bullets[i] = NULL;
-						(*it)->dead = true;
+						entities.erase(it);
 						score++;
 
 						if (score == (ALIEN_COL * ALIEN_ROW)) state = STATE_GAME_OVER;
+						return;
 					}
 				}
 			}
@@ -197,7 +198,7 @@ GLvoid GameEngine::Update(){
 	}
 }
 GLvoid GameEngine::Render(){
-	DrawBackground(spaceship->x * 0.07f);
+	DrawBackground(spaceship->x * 0.05f);
 	if (state != STATE_GAME_OVER)
 	{
 		spaceship->draw();
@@ -216,7 +217,7 @@ GLvoid GameEngine::Render(){
 		DrawText(to_string(score), 0.1f, -0.05f, -0.6f, 0.92f, 1.0f, 1.0f, 1.0f, 1.0f);
 
 		for (vector<Entity*>::iterator it = entities.begin(); it != entities.end(); ++it) {
-			if (!(*it)->dead) (*it)->draw();
+			(*it)->draw();
 		}
 
 		for (int i = 0; i < MAX_LASERS; i++) {
