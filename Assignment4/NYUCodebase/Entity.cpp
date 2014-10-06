@@ -46,8 +46,18 @@ GLvoid Entity::fixedUpdate(GLfloat gravity_x, GLfloat gravity_y){
 	collidedLeft = false;
 	collidedRight = false;
 	if (!isStatic){
-		if (!isIdle) move();
-		else decellerate();
+		if (!isIdle){
+			moveY();
+			collisionPenY();
+			moveX();
+			collisionPenX();
+		}
+		else{
+			decelerateY();
+			collisionPenY();
+			decelerateX();
+			collisionPenX();
+		}
 
 		if (enableGravity && !collidedBottom){
 			velocity_x += gravity_x * FIXED_TIMESTEP;
@@ -84,30 +94,36 @@ GLvoid Entity::rotate(GLfloat degree){
 	else if (rotation < -360.0f) rotation += 360.0f;
 }
 
-GLvoid Entity::move(){
+GLvoid Entity::moveX(){
 	GLfloat radian = (facing * PI) / 180.0f;
 
-	/*x += cos(radian) * e * velocity_x;
-	y += sin(radian) * e * velocity_x;*/
-
 	velocity_x += acceleration_x * FIXED_TIMESTEP * cos(radian);
-	velocity_y += acceleration_y * FIXED_TIMESTEP * sin(radian);
 
 	if (velocity_x > speed) velocity_x = speed;
 	else if (velocity_x < -speed) velocity_x = -speed;
 
 	x += velocity_x * FIXED_TIMESTEP;
+
+}
+
+GLvoid Entity::moveY(){
+	GLfloat radian = (facing * PI) / 180.0f;
+	velocity_y += acceleration_y * FIXED_TIMESTEP * sin(radian);
 	y += velocity_y * FIXED_TIMESTEP;
 }
 
-GLvoid Entity::decellerate(){
+GLvoid Entity::decelerateX(){
 	GLfloat radian = (facing * PI) / 180.0f;
 	velocity_x = lerp(velocity_x, 0.0f, FIXED_TIMESTEP * friction_x);
-	velocity_y = lerp(velocity_y, 0.0f, FIXED_TIMESTEP * friction_y);
 	x += velocity_x * FIXED_TIMESTEP;
-	y += velocity_y * FIXED_TIMESTEP;
-
 }
+
+GLvoid Entity::decelerateY(){
+	GLfloat radian = (facing * PI) / 180.0f;
+	velocity_y = lerp(velocity_y, 0.0f, FIXED_TIMESTEP * friction_y);
+	y += velocity_y * FIXED_TIMESTEP;
+}
+
 //Box-box Collision
 GLboolean Entity::collidesWith(Entity *e){
 	if (!enableCollisions || !e->enableCollisions) return false;
@@ -134,3 +150,50 @@ GLboolean Entity::collidesWith(GLfloat posX, GLfloat posY){
 	return !((posX > left && posX < right) || (posY > bot && posY < top));
 }
 
+
+GLvoid Entity::collisionPenY(){
+	vector<Entity*>::iterator end = entities.end();
+	for (vector<Entity*>::iterator it2 = entities.begin(); it2 != end; ++it2){
+		if (this != (*it2) && (*it2)->isStatic && collidesWith((*it2))){
+			GLfloat distance_y = fabs((*it2)->y - y);
+			GLfloat height1 = sprite->height * 0.5f * scale;
+			GLfloat height2 = (*it2)->sprite->height * 0.5f * (*it2)->scale;
+			GLfloat yPenetration = fabs(distance_y - height1 - height2);
+
+			if (y > (*it2)->y){
+				y += yPenetration + 0.0001f;
+				collidedBottom = true;
+			}
+			else{
+				y -= yPenetration + 0.0001f;
+				collidedTop = true;
+			}
+
+			//if (!(*it2)->isStatic) (*it2)->y += yPenetration;
+			velocity_y = 0.0f;
+		}
+	}
+}
+
+GLvoid Entity::collisionPenX(){
+	vector<Entity*>::iterator end = entities.end();
+	for (vector<Entity*>::iterator it2 = entities.begin(); it2 != end; ++it2){
+		if (this != (*it2) && (*it2)->isStatic && collidesWith((*it2))){
+			GLfloat distance_x = fabs((*it2)->x - x);
+			GLfloat width1 = sprite->width * 0.5f * scale;
+			GLfloat width2 = (*it2)->sprite->width * 0.5f * (*it2)->scale;
+			GLfloat xPenetration = fabs(distance_x - width1 - width2);
+
+			if (x > (*it2)->x){
+				x += xPenetration + 0.0001f;
+				collidedRight = true;
+			}
+			else{
+				x -= xPenetration + 0.0001f;
+				collidedLeft = true;
+			}
+
+			velocity_x = 0.0f;
+		}
+	}
+}

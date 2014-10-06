@@ -176,7 +176,6 @@ GLvoid GameEngine::time(){
 	while (fixedElapsed >= FIXED_TIMESTEP) {
 		fixedElapsed -= FIXED_TIMESTEP;
 		Entity::fixedUpdateAll(gravity_x,gravity_y);
-		collisionPen();
 	}
 	timeLeftOver = fixedElapsed;
 
@@ -189,8 +188,10 @@ GLvoid GameEngine::Setup(){
 	SDL_GLContext context = SDL_GL_CreateContext(displayWindow);
 	SDL_GL_MakeCurrent(displayWindow, context);
 	glViewport(0, 0, RESOLUTION_W, RESOLUTION_H);
-	glMatrixMode(GL_MODELVIEW);
+	glMatrixMode(GL_PROJECTION);
 	glOrtho(-ASPECT_RATIO_X, ASPECT_RATIO_X, -ASPECT_RATIO_Y, ASPECT_RATIO_Y, -1.0, 1.0);
+	glMatrixMode(GL_MODELVIEW);
+
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	elapsed = 0;
 	lastFrameTicks = 0;
@@ -261,61 +262,6 @@ GLvoid GameEngine::DrawBackground(GLfloat offsetX){
 	glDisable(GL_TEXTURE_2D);
 }
 
-GLvoid GameEngine::collisionPen(){
-	vector<Entity*>::iterator end = Entity::entities.end();
-
-	for (vector<Entity*>::iterator it = Entity::entities.begin(); it != end; ++it){
-		if ((*it)->enableCollisions)
-		for (vector<Entity*>::iterator it2 = Entity::entities.begin(); it2 != end; ++it2){
-			if (it != it2 && (*it)->collidesWith((*it2)) && !(*it)->isStatic && (*it2)->isStatic && !(*it)->collidedLeft && !(*it)->collidedRight){
-				GLfloat distance_y = fabs((*it2)->y - (*it)->y);
-				GLfloat height1 = (*it)->sprite->height * 0.5f * (*it)->scale;
-				GLfloat height2 = (*it2)->sprite->height * 0.5f * (*it2)->scale;
-				GLfloat yPenetration = fabs(distance_y - height1 - height2);
-
-				GLfloat distance_x = fabs((*it2)->x - (*it)->x);
-				GLfloat width1 = (*it)->sprite->width * 0.5f * (*it)->scale;
-				GLfloat width2 = (*it2)->sprite->width * 0.5f * (*it2)->scale;
-				GLfloat xPenetration = fabs(distance_x - width1 - width2);
-
-				if (yPenetration < xPenetration){
-					if ((*it)->y < (*it2)->y) {
-						(*it)->y -= yPenetration;
-						(*it)->collidedTop = true;
-					}
-					else{
-						(*it)->y += yPenetration;
-						(*it)->collidedBottom = true;
-					}
-
-
-					if (!(*it2)->isStatic) (*it2)->y += yPenetration;
-					(*it)->y += (*it)->velocity_y * FIXED_TIMESTEP;
-					(*it)->velocity_y = (*it)->enableBounce ? fabs((*it)->velocity_y) : 0.0f;
-				}
-
-				
-
-				else{
-					if ((*it)->x < (*it2)->x) {
-						(*it)->x -= xPenetration;
-						(*it)->collidedRight = true;
-					}
-					else{
-						(*it)->x += xPenetration;
-						(*it)->collidedLeft = true;
-					}
-
-
-					if (!(*it2)->isStatic) (*it2)->x += xPenetration;
-					(*it)->x += (*it)->velocity_x * FIXED_TIMESTEP;
-					(*it)->velocity_x = 0.0f;
-				}
-			}
-		}
-	}
-}
-
 GLvoid GameEngine::drawPlatformHorizontal(GLfloat length, GLfloat x, GLfloat y){
 	placeHolderSprite = new SheetSprite(charSheet, 0, 95 / 128.0f, 0.075f, 0.075f);
 	for (GLfloat i = -(length / 2) + 0.3f; i < (length / 2); i++)
@@ -329,7 +275,8 @@ GLvoid GameEngine::drawPlatformVertical(GLfloat length, GLfloat x, GLfloat y){
 	placeHolderSprite = new SheetSprite(charSheet, 0, 72 / 128.0f, 0.075f, 0.075f);
 	for (GLfloat i = -(length / 2) + 0.3f; i < (length / 2); i++)
 	{
-		platform = new Entity(placeHolderSprite, x, (i * 0.075f * ASPECT_RATIO_X) + y);
+		platform = new Entity(placeHolderSprite, x, (i * 0.15f) + y);
+		platform->scale = 2.0f;
 		platform->isStatic = true;
 	}
 }

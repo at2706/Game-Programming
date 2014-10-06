@@ -26,7 +26,6 @@ private:
 	GLuint loadTexture(const char *image_path, GLint param = GL_LINEAR);
 	GLvoid DrawText(string text, GLfloat size, GLfloat spacing, GLfloat x, GLfloat y, GLfloat r, GLfloat g, GLfloat b, GLfloat a);
 	GLvoid DrawBackground(GLfloat offsetX = 0.0f);
-	GLvoid collisionPen();
 
 	GLvoid drawPlatformHorizontal(GLfloat length, GLfloat x, GLfloat y);
 	GLvoid drawPlatformVertical(GLfloat length, GLfloat x, GLfloat y);

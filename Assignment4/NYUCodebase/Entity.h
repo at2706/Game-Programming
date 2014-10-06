@@ -20,10 +20,18 @@ public:
 					GLfloat friction_x = 0.8f, GLfloat friction_y = 0.8f);
 	GLvoid rotate(GLfloat degree);
 
-	GLvoid move();
-	GLvoid decellerate();
+	GLvoid moveX();
+	GLvoid moveY();
+
+	GLvoid decelerateX();
+	GLvoid decelerateY();
+
 	GLboolean collidesWith(Entity *e);
 	GLboolean collidesWith(GLfloat posX, GLfloat posY);
+
+	GLvoid collisionPenX();
+	GLvoid collisionPenY();
+
 
 	static vector<Entity*> entities;
 	static GLvoid drawAll();
