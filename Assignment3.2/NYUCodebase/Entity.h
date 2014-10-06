@@ -15,7 +15,7 @@ class Entity
 public:
 	Entity(SpriteSheet *sheet, GLfloat u, GLfloat v, GLfloat posX = 0.0f,
 		GLfloat posY = 0.0f, GLfloat width = 1.0f, GLfloat height = 1.0f,
-		GLfloat rotate = 0.0f, GLfloat speed = 1.0f, GLfloat scale = 1.0f);
+		GLfloat rotate = 0.0f, GLfloat speed = 1.0f, GLfloat scaleX = 1.0f);
 	Entity(const Entity& e);
 	~Entity();
 
@@ -35,7 +35,7 @@ public:
 	GLfloat y;
 	GLfloat facing;
 	GLfloat speed;
-	GLboolean dead;
+	GLfloat health;
 private:	
 
 	SpriteSheet *sprite;

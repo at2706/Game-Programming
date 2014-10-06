@@ -28,8 +28,8 @@ GLvoid SpriteSheet::draw(GLfloat u, GLfloat v, GLfloat x, GLfloat y, GLfloat wid
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	glTranslatef(x, y, 0.0);
-	GLfloat quad[] = { -width * scale, height * 1.33f * scale, -width * scale, -height * 1.33f * scale,
-		width * scale, -height * 1.33f * scale, width * scale, height * 1.33f * scale };
+	GLfloat quad[] = { -width * scale / 2, height * scale * 1.33f / 2, -width * scale / 2, -height * scale * 1.33f / 2,
+		width * scale / 2, -height * scale * 1.33f / 2, width * scale / 2, height * scale * 1.33f / 2 };
 	glVertexPointer(2, GL_FLOAT, 0, quad);
 	glEnableClientState(GL_VERTEX_ARRAY);
 	GLfloat quadUVs[] = { u, v, u, v + height, u + width, v + height, u + width, v };

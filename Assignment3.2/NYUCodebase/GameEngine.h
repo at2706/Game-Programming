@@ -61,5 +61,6 @@ private:
 	Entity *startButton;
 
 	GLint score;
+	GLboolean victory;
 };
 

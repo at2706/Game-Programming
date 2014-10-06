@@ -4,13 +4,10 @@ GameEngine::GameEngine(){
 	Setup();
 
 	charSheet = new SpriteSheet("sprites.png");
-	fontTexture = loadTexture("font1.png");
+	fontTexture = loadTexture("font1.png", GL_NEAREST);
 	bgTexture = loadTexture("grass.png");
 	state = STATE_MAIN_MENU;
 
-	GLfloat posX = -0.88f;
-	GLfloat posY = 0.95f;
-	GLint u = 0;
 	alienDirection = 0.0f;
 	movingRight = true;
 	alienSpeed = 0.3f;
@@ -21,16 +18,19 @@ GameEngine::GameEngine(){
 
 	bulletIndex = 0;
 	spaceship = new Entity(charSheet, 0, 96 / 256.0f, 0.0f, -0.9f,
-		51.0f / 128.0f, 31.0f / 256.0f, 0.0, 2.0f, 0.2f);
+		51.0f / 128.0f, 31.0f / 256.0f, 0.0, 2.0f, 0.4f);
 
 	startButton = new Entity(charSheet, 0, 0, 0.0f, 0.0f,
-		81.0f / 128.0f, 64.0f / 256.0f, 0.0, 2.0f, 0.25f);
+		81.0f / 128.0f, 64.0f / 256.0f, 0.0, 2.0f, 0.5f);
 
+	GLfloat posX = -0.88f;
+	GLfloat posY = 0.95f;
+	GLint u = 0;
 
 	for (GLint c = 0; c < ALIEN_COL; c++){
 		for (GLint r = 0; r < ALIEN_ROW; r++){
 			entities.push_back(new Entity(charSheet, u/ 128.0f, 129 / 256.0f, posX, posY,
-							49.0f / 128.0f, 32.0f / 256.0f, 0.0, alienSpeed, 0.15f));
+							49.0f / 128.0f, 32.0f / 256.0f, 0.0, alienSpeed, 0.3f));
 			posX += 1.2f / ALIEN_ROW;
 		}
 		u = 51;
@@ -40,12 +40,9 @@ GameEngine::GameEngine(){
 
 }
 
-
 GameEngine::~GameEngine(){
 	SDL_Quit();
 }
-
-
 
 GLboolean GameEngine::ProcessEvents(){
 	SDL_Event event;
@@ -71,7 +68,7 @@ GLboolean GameEngine::ProcessEvents(){
 	if (keys[SDL_SCANCODE_SPACE]) {
 		if (lastBullet > BULLET_DELAY){
 			bullets[bulletIndex] = new Entity(charSheet, 66 / 128.0f, 66 / 256.0f, spaceship->x, spaceship->y,
-				13.0f / 128.0f, 32.0f / 256.0f, 0.0, BULLET_SPEED, 0.1f);
+				13.0f / 128.0f, 32.0f / 256.0f, 0.0, BULLET_SPEED, 0.2f);
 			lastBullet = 0.0f;
 			if (bulletIndex < MAX_BULLETS - 1) bulletIndex++;
 			else bulletIndex = 0;
@@ -98,16 +95,17 @@ GLvoid GameEngine::Update(){
 					delete bullets[i];
 					bullets[i] = NULL;
 					state = STATE_GAME_LEVEL;
+					return;
 				}
 			}
 		}
 		break;
 	case STATE_GAME_LEVEL:
+		alienFiringIndex = rand() % entities.size();
 		if (alienLastLaser > alienFireDelay && entities[alienFiringIndex] != NULL){
 			lasers[alienLaserIndex] = new Entity(charSheet, 66 / 128.0f, 66 / 256.0f, entities[alienFiringIndex]->x, entities[alienFiringIndex]->y,
-				13.0f / 128.0f, 32.0f / 256.0f,  0.0, BULLET_SPEED, 0.1f);
+				13.0f / 128.0f, 32.0f / 256.0f,  0.0, BULLET_SPEED, 0.2f);
 			alienLastLaser = 0.0f;
-			alienFiringIndex = rand() % entities.size();
 			if (alienLaserIndex < MAX_LASERS - 1) alienLaserIndex++;
 			else alienLaserIndex = 0;
 		}
@@ -131,6 +129,7 @@ GLvoid GameEngine::Update(){
 				}
 				alienTravelTime = 0.0f;
 				alienRowCount++;
+				alienFireDelay -= 0.025f;
 			}
 		}
 
@@ -185,7 +184,10 @@ GLvoid GameEngine::Update(){
 						entities.erase(it);
 						score++;
 
-						if (score == (ALIEN_COL * ALIEN_ROW)) state = STATE_GAME_OVER;
+						if (score == (ALIEN_COL * ALIEN_ROW)){
+							victory = true;
+							state = STATE_GAME_OVER;
+						}
 						return;
 					}
 				}
@@ -228,7 +230,9 @@ GLvoid GameEngine::Render(){
 		break;
 
 	case STATE_GAME_OVER:
-		DrawText("GAME OVER", 0.2f, -0.05f, 0.0f, 0.4f, 0.0f, 1.0f, 01.5f, 1.0f);
+		string msg = victory ? " VICTORY!" : "GAME OVER";
+
+		DrawText(msg, 0.2f, -0.05f, 0.0f, 0.4f, 0.0f, 1.0f, 01.5f, 1.0f);
 		DrawText("SCORE:", 0.1f, -0.05f, -0.2f, 0.1f, 1.0f, 1.0f, 1.0f, 1.0f);
 		DrawText(to_string(score), 0.1f, -0.05f, 0.1f, 0.1f, 1.0f, 1.0f, 1.0f, 1.0f);
 
