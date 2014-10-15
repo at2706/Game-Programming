@@ -204,10 +204,9 @@ GLvoid GameEngine::drawLevel(){
 	glBindTexture(GL_TEXTURE_2D, charSheet);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-	glTranslatef(-ASPECT_RATIO_X + 0.2f, ASPECT_RATIO_Y + 0.2f, 0.0f);
-
-	for (int y = 0; y < LEVEL_HEIGHT; y++) {
-		for (int x = 0; x < LEVEL_WIDTH; x++) {
+	glTranslatef(-TILE_SIZE * mapWidth / 2, TILE_SIZE * mapHeight / 2, 0.0f);
+	for (int y = 0; y < mapHeight; y++) {
+		for (int x = 0; x < mapWidth; x++) {
 			float u = (float)(((int)levelData[y][x]) % SPRITE_COUNT_X) / (float)SPRITE_COUNT_X;
 			float v = (float)(((int)levelData[y][x]) / SPRITE_COUNT_X) / (float)SPRITE_COUNT_Y;
 			float spriteWidth = 1.0f / (float)SPRITE_COUNT_X;
@@ -236,8 +235,8 @@ GLvoid GameEngine::drawLevel(){
 
 GLboolean GameEngine::readHeader(ifstream &stream){
 	string line;
-	GLint mapWidth = -1;
-	GLint mapHeight = -1;
+	mapWidth = -1;
+	mapHeight = -1;
 	while (getline(stream, line)) {
 		if (line == "") { break; }
 		istringstream sStream(line);
@@ -272,11 +271,11 @@ GLboolean GameEngine::readLayerData(ifstream &stream){
 		getline(sStream, key, '=');
 		getline(sStream, value);
 		if (key == "data") {
-			for (int y = 0; y < LEVEL_HEIGHT; y++) {
+			for (int y = 0; y < mapHeight; y++) {
 				getline(stream, line);
 				istringstream lineStream(line);
 				string tile;
-				for (int x = 0; x < LEVEL_WIDTH; x++) {
+				for (int x = 0; x < mapWidth; x++) {
 					getline(lineStream, tile, ',');
 					unsigned char val = (unsigned char)atoi(tile.c_str());
 					if (val > 0) {

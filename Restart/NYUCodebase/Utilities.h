@@ -23,7 +23,7 @@
 #define FIXED_TIMESTEP 0.0166666f
 #define MAX_TIMESTEPS 6
 
-#define LEVEL_HEIGHT 128
+#define LEVEL_HEIGHT 22
 #define LEVEL_WIDTH 32
 #define TILE_SIZE 1.0f
 #define SPRITE_COUNT_X 16

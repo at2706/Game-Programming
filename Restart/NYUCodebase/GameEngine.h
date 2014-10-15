@@ -19,7 +19,7 @@ private:
 	SDL_Window* displayWindow;
 	const Uint8 *keys = SDL_GetKeyboardState(NULL);
 	enum GameState { STATE_MAIN_MENU, STATE_GAME_LEVEL, STATE_GAME_OVER };
-	unsigned char levelData[LEVEL_HEIGHT][LEVEL_WIDTH];
+	unsigned char **levelData;
 
 	GLvoid Setup();
 	GLvoid time();
@@ -27,8 +27,6 @@ private:
 	GLvoid DrawText(string text, GLfloat size, GLfloat spacing, GLfloat x, GLfloat y, GLfloat r, GLfloat g, GLfloat b, GLfloat a);
 	GLvoid DrawBackground(GLfloat offsetX = 0.0f);
 
-	GLvoid drawPlatformHorizontal(GLfloat length, GLfloat x, GLfloat y);
-	GLvoid drawPlatformVertical(GLfloat length, GLfloat x, GLfloat y);
 	GLvoid buildLevel();
 	GLvoid drawLevel();
 
@@ -38,6 +36,9 @@ private:
 	GLvoid placeEntity(string &type, GLfloat x, GLfloat y);
 
 	GLvoid reset();
+	GLint mapWidth;
+	GLint mapHeight;
+
 
 	GLfloat timeLeftOver = 0.0f;
 	GLfloat elapsed;
