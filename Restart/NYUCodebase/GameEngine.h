@@ -35,7 +35,7 @@ private:
 	GLboolean readHeader(ifstream &stream);
 	GLboolean readLayerData(ifstream &stream);
 	GLboolean readEntityData(ifstream &stream);
-
+	GLvoid placeEntity(string &type, GLfloat x, GLfloat y);
 
 	GLvoid reset();
 

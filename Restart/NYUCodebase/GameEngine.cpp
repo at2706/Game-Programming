@@ -180,27 +180,21 @@ GLvoid GameEngine::DrawBackground(GLfloat offsetX){
 }
 
 GLvoid GameEngine::buildLevel(){
-	unsigned char level1Data[LEVEL_HEIGHT][LEVEL_WIDTH] =
-	{
-		{ 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11 },
-		{ 0, 20, 4, 4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 4, 4, 20, 0 },
-		{ 0, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 0 },
-		{ 0, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 0 },
-		{ 0, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 0 },
-		{ 0, 20, 0, 0, 0, 0, 0, 6, 6, 6, 6, 6, 6, 6, 6, 0, 0, 0, 0, 0, 20, 0 },
-		{ 0, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 0 },
-		{ 0, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 0 },
-		{ 0, 20, 6, 6, 6, 6, 6, 0, 0, 0, 0, 0, 0, 0, 0, 6, 6, 6, 6, 6, 20, 0 },
-		{ 0, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 0 },
-		{ 0, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 0 },
-		{ 0, 20, 0, 0, 0, 0, 0, 6, 6, 6, 6, 6, 6, 6, 6, 0, 0, 0, 0, 0, 20, 0 },
-		{ 0, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 0 },
-		{ 0, 20, 125, 118, 0, 0, 116, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 117, 0, 127, 20, 0 },
-		{ 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 0, 0, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2 },
-		{ 32, 33, 33, 34, 32, 33, 33, 34, 33, 35, 100, 101, 35, 32, 33, 32, 34, 32, 33, 32, 33, 33 }
-	};
-
-	memcpy(levelData, level1Data, LEVEL_HEIGHT*LEVEL_WIDTH);
+	ifstream infile("LevelSet.txt");
+	string line;
+	while (getline(infile, line)) {
+			if (line == "[header]") {
+			if (!readHeader(infile)) {
+				return;
+			}
+			}
+			else if (line == "[layer]") {
+				readLayerData(infile);
+			}
+			else if (line == "[ObjectsLayer]") {
+				readEntityData(infile);
+			}
+	}
 }
 
 GLvoid GameEngine::drawLevel(){
@@ -240,6 +234,35 @@ GLvoid GameEngine::drawLevel(){
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 }
 
+GLboolean GameEngine::readHeader(ifstream &stream){
+	string line;
+	GLint mapWidth = -1;
+	GLint mapHeight = -1;
+	while (getline(stream, line)) {
+		if (line == "") { break; }
+		istringstream sStream(line);
+		string key, value;
+		getline(sStream, key, '=');
+		getline(sStream, value);
+		if (key == "width") {
+			mapWidth = atoi(value.c_str());
+		}
+		else if (key == "height"){
+			mapHeight = atoi(value.c_str());
+		}
+	}
+	if (mapWidth == -1 || mapHeight == -1) {
+		return false;
+	}
+	else { // allocate our map data
+		levelData = new unsigned char*[mapHeight];
+		for (int i = 0; i < mapHeight; ++i) {
+			levelData[i] = new unsigned char[mapWidth];
+		}
+		return true;
+	}
+}
+
 GLboolean GameEngine::readLayerData(ifstream &stream){
 	string line;
 	while (getline(stream, line)) {
@@ -249,11 +272,11 @@ GLboolean GameEngine::readLayerData(ifstream &stream){
 		getline(sStream, key, '=');
 		getline(sStream, value);
 		if (key == "data") {
-			for (int y = 0; y < mapHeight; y++) {
+			for (int y = 0; y < LEVEL_HEIGHT; y++) {
 				getline(stream, line);
 				istringstream lineStream(line);
 				string tile;
-				for (int x = 0; x < mapWidth; x++) {
+				for (int x = 0; x < LEVEL_WIDTH; x++) {
 					getline(lineStream, tile, ',');
 					unsigned char val = (unsigned char)atoi(tile.c_str());
 					if (val > 0) {
@@ -268,6 +291,35 @@ GLboolean GameEngine::readLayerData(ifstream &stream){
 		}
 	}
 	return true;
+}
+
+GLboolean GameEngine::readEntityData(ifstream &stream){
+	string line;
+	string type;
+	while (getline(stream, line)) {
+		if (line == "") { break; }
+		istringstream sStream(line);
+		string key, value;
+		getline(sStream, key, '=');
+		getline(sStream, value);
+		if (key == "type") {
+			type = value;
+		}
+		else if (key == "location") {
+			istringstream lineStream(value);
+			string xPosition, yPosition;
+			getline(lineStream, xPosition, ',');
+			getline(lineStream, yPosition, ',');
+			float placeX = atoi(xPosition.c_str()) / 16 * TILE_SIZE;
+			float placeY = atoi(yPosition.c_str()) / 16 * -TILE_SIZE;
+			placeEntity(type, placeX, placeY);
+		}
+	}
+	return true;
+}
+
+GLvoid GameEngine::placeEntity(string &type, GLfloat x, GLfloat y){
+
 }
 
 /*
