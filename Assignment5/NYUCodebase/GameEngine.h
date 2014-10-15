@@ -15,12 +15,14 @@ public:
 	GLboolean ProcessEvents();
 	GLvoid Update();
 	GLvoid Render();
-	
+
 private:
 	//Game Constants
 	SDL_Window* displayWindow;
 	const Uint8 *keys = SDL_GetKeyboardState(NULL);
 	enum GameState { STATE_MAIN_MENU, STATE_GAME_LEVEL, STATE_GAME_OVER };
+	GLchar levelData[LEVEL_HEIGHT][LEVEL_WIDTH];
+
 	GLvoid Setup();
 	GLvoid time();
 	GLuint loadTexture(const char *image_path, GLint param = GL_LINEAR);
@@ -29,6 +31,7 @@ private:
 
 	GLvoid drawPlatformHorizontal(GLfloat length, GLfloat x, GLfloat y);
 	GLvoid drawPlatformVertical(GLfloat length, GLfloat x, GLfloat y);
+	GLvoid buildLevel();
 	GLvoid reset();
 
 	GLfloat timeLeftOver = 0.0f;

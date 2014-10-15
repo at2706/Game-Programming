@@ -18,3 +18,6 @@
 #define ASPECT_RATIO_Y 1.0f
 #define FIXED_TIMESTEP 0.0166666f
 #define MAX_TIMESTEPS 6
+
+#define LEVEL_HEIGHT 16
+#define LEVEL_WIDTH 22

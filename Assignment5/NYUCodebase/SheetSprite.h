@@ -4,25 +4,32 @@
 class SheetSprite
 {
 public:
-	SheetSprite(GLuint textureID, GLfloat u, GLfloat v, GLfloat width, GLfloat height );
-	SheetSprite(GLuint textureID, GLint index, GLint SpriteCountX, GLint SpriteCountY );
-
+	SheetSprite();
+	SheetSprite(GLuint textureID, GLfloat u, GLfloat v, GLfloat width, GLfloat height);
 	~SheetSprite();
 
-	GLvoid draw(GLfloat x, GLfloat y, GLfloat scale = 1.0f);
+	virtual GLvoid draw(GLfloat x, GLfloat y, GLfloat scale = 1.0f);
 	GLuint textureID;
 
-private:
-	friend class Entity;
-	friend class GameEngine;
 	GLfloat u;
 	GLfloat v;
 	GLfloat width;
 	GLfloat height;
 
-	GLboolean uniform;
+private:
+	friend class Entity;
+	friend class GameEngine;
 
+	
+};
+
+class SpriteUniformed : public SheetSprite{
+public:
+	SpriteUniformed(GLuint textureID, GLint index, GLint SpriteCountX, GLint SpriteCountY);
+	GLvoid draw(GLfloat x, GLfloat y, GLfloat scale = 1.0f);
+
+private:
 	GLint index;
-	GLint SpriteCountX;
-	GLint SpriteCountY;
+	GLint spriteCountX;
+	GLint spriteCountY;
 };

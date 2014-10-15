@@ -26,7 +26,7 @@ Entity::Entity(SheetSprite *sheet, GLfloat posX, GLfloat posY,
 	id = entities.end();
 }
 
-Entity::~Entity(){}
+Entity::~Entity(){ entities.erase(id); }
 GLvoid Entity::draw(){
 	if (isVisable)
 	sprite->draw(x, y, scale);
