@@ -20,10 +20,10 @@ GLvoid SheetSprite::draw(GLfloat x, GLfloat y, GLfloat scale){
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	glTranslatef(x, y, 0.0);
-	GLfloat quad[] = {	-width * scale / 2, height * scale / 2,
-						-width * scale / 2, -height * scale / 2,
-						width * scale / 2, -height * scale / 2,
-						width * scale / 2, height * scale / 2 };
+	GLfloat quad[] = {	-width * scale, height * scale / 2,
+						-width * scale, -height * scale / 2,
+						width * scale, -height * scale / 2,
+						width * scale, height * scale / 2 };
 	glVertexPointer(2, GL_FLOAT, 0, quad);
 	glEnableClientState(GL_VERTEX_ARRAY);
 	GLfloat quadUVs[] = { u, v, u, v + height, u + width,
@@ -54,10 +54,10 @@ GLvoid SpriteUniformed::draw(GLfloat x, GLfloat y, GLfloat scale){
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	glTranslatef(x, y, 0.0);
-	GLfloat quad[] = {	-width * scale / 2, height * scale / 2,
-						-width * scale / 2, -height * scale / 2,
-						width * scale / 2, -height * scale / 2,
-						width * scale / 2, height * scale / 2 };
+	GLfloat quad[] = {	-width * scale, height * scale / 2,
+						-width * scale, -height * scale / 2,
+						width * scale, -height * scale / 2,
+						width * scale, height * scale / 2 };
 	glVertexPointer(2, GL_FLOAT, 0, quad);
 	glEnableClientState(GL_VERTEX_ARRAY);
 
