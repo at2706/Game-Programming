@@ -7,6 +7,10 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <fstream>
+#include <string>
+#include <iostream>
+#include <sstream>
 
 #define PI 3.14159265359f
 
@@ -21,6 +25,6 @@
 
 #define LEVEL_HEIGHT 16
 #define LEVEL_WIDTH 22
-#define TILE_SIZE 0.8f
+#define TILE_SIZE 1.0f
 #define SPRITE_COUNT_X 16
 #define SPRITE_COUNT_Y 8

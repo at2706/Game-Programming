@@ -218,10 +218,11 @@ GLvoid GameEngine::drawLevel(){
 			float v = (float)(((int)levelData[y][x]) / SPRITE_COUNT_X) / (float)SPRITE_COUNT_Y;
 			float spriteWidth = 1.0f / (float)SPRITE_COUNT_X;
 			float spriteHeight = 1.0f / (float)SPRITE_COUNT_Y;
-			vertexData.insert(vertexData.end(), { -spriteWidth, spriteHeight/ 2,
-				-spriteWidth, -spriteHeight / 2,
-				spriteWidth, -spriteHeight / 2,
-				spriteWidth, spriteHeight / 2 });
+			vertexData.insert(vertexData.end(), {
+				TILE_SIZE * x, -TILE_SIZE * y,
+				TILE_SIZE * x, (-TILE_SIZE * y) - TILE_SIZE,
+				(TILE_SIZE * x) + TILE_SIZE, (-TILE_SIZE * y) - TILE_SIZE,
+				(TILE_SIZE * x) + TILE_SIZE, -TILE_SIZE * y});
 			texCoordData.insert(texCoordData.end(), { u, v,
 				u, v + (spriteHeight),
 				u + spriteWidth, v + (spriteHeight),
@@ -237,6 +238,36 @@ GLvoid GameEngine::drawLevel(){
 	glDisable(GL_TEXTURE_2D);
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+}
+
+GLboolean GameEngine::readLayerData(ifstream &stream){
+	string line;
+	while (getline(stream, line)) {
+		if (line == "") { break; }
+		istringstream sStream(line);
+		string key, value;
+		getline(sStream, key, '=');
+		getline(sStream, value);
+		if (key == "data") {
+			for (int y = 0; y < mapHeight; y++) {
+				getline(stream, line);
+				istringstream lineStream(line);
+				string tile;
+				for (int x = 0; x < mapWidth; x++) {
+					getline(lineStream, tile, ',');
+					unsigned char val = (unsigned char)atoi(tile.c_str());
+					if (val > 0) {
+						// be careful, the tiles in this format are indexed from 1 not 0
+						levelData[y][x] = val - 1;
+					}
+					else {
+						levelData[y][x] = 0;
+					}
+				}
+			}
+		}
+	}
+	return true;
 }
 
 /*

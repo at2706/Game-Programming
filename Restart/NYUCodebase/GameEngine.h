@@ -31,6 +31,12 @@ private:
 	GLvoid drawPlatformVertical(GLfloat length, GLfloat x, GLfloat y);
 	GLvoid buildLevel();
 	GLvoid drawLevel();
+
+	GLboolean readHeader(ifstream &stream);
+	GLboolean readLayerData(ifstream &stream);
+	GLboolean readEntityData(ifstream &stream);
+
+
 	GLvoid reset();
 
 	GLfloat timeLeftOver = 0.0f;
