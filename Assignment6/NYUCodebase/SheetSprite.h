@@ -8,7 +8,7 @@ public:
 	SheetSprite(GLuint textureID, GLfloat u, GLfloat v, GLfloat width, GLfloat height);
 	~SheetSprite();
 
-	virtual GLvoid draw(GLfloat x, GLfloat y, GLfloat scale = 1.0f);
+	virtual GLvoid draw(GLfloat x, GLfloat y, GLfloat facing, GLfloat scale);
 	GLuint textureID;
 
 	GLfloat u;
@@ -25,7 +25,7 @@ private:
 class SpriteUniformed : public SheetSprite{
 public:
 	SpriteUniformed(GLuint textureID, GLint index, GLint SpriteCountX, GLint SpriteCountY);
-	GLvoid draw(GLfloat x, GLfloat y, GLfloat scale = 1.0f);
+	GLvoid draw(GLfloat x, GLfloat y, GLfloat facing, GLfloat scale);
 
 private:
 	GLint index;

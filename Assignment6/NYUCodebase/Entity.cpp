@@ -30,7 +30,7 @@ Entity::~Entity(){ entities.erase(id); }
 GLvoid Entity::draw(){
 	//sprite->index = animationIndex;
 	if (isVisable)
-	sprite->draw(x, y, scale);
+	sprite->draw(x, y, facing, scale);
 
 }
 GLvoid Entity::drawAll(){
@@ -111,12 +111,10 @@ GLvoid Entity::moveY(){
 	y += velocity_y * FIXED_TIMESTEP;
 }
 GLvoid Entity::decelerateX(){
-	GLfloat radian = (facing * PI) / 180.0f;
 	velocity_x = lerp(velocity_x, 0.0f, FIXED_TIMESTEP * friction_x);
 	x += velocity_x * FIXED_TIMESTEP;
 }
 GLvoid Entity::decelerateY(){
-	GLfloat radian = (facing * PI) / 180.0f;
 	velocity_y = lerp(velocity_y, 0.0f, FIXED_TIMESTEP * friction_y);
 	y += velocity_y * FIXED_TIMESTEP;
 }

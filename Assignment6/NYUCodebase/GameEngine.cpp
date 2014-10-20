@@ -11,10 +11,6 @@ GameEngine::GameEngine(){
 	bgTexture = loadTexture("colored_grass.png");
 	state = STATE_MAIN_MENU;
 
-	sprite = new SpriteUniformed(tileSheet, 18, 16, 8);
-	platform = new Entity(sprite);
-	platform->isStatic = true;
-
 	sprite = new SpriteUniformed(tileSheet, 80, 16, 8);
 	hero = new Entity(sprite,0.0f,0.2f);
 	hero->setMovement(3.0f, 0.75f, 0.75f, 2.0f, 2.0f);
@@ -47,8 +43,9 @@ GLboolean GameEngine::ProcessEvents(){
 		hero->isIdle = true;
 	}
 
-	if (keys[SDL_SCANCODE_UP])
-		hero->velocity_y = 1.0f;
+	if (keys[SDL_SCANCODE_UP] && hero->collidedBottom){
+		hero->velocity_y = 2.5f;
+	}
 
 	switch (state){
 	case STATE_MAIN_MENU:
@@ -360,3 +357,7 @@ GLvoid GameEngine::drawPlatformHorizontal(GLfloat length, GLfloat x, GLfloat y){
 		platform->isStatic = true;
 	}
 }
+
+/*
+	vectors are relative
+*/
