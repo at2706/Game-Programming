@@ -49,7 +49,6 @@ SpriteUniformed::SpriteUniformed(GLuint texID, GLint index, GLint SpriteCountX, 
 }
 
 GLvoid SpriteUniformed::draw(GLfloat x, GLfloat y, GLfloat scale){
-
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, textureID);
 	glMatrixMode(GL_MODELVIEW);

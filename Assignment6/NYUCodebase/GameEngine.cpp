@@ -5,7 +5,7 @@ GameEngine::GameEngine(){
 	buildLevel();
 	elapsed = 0;
 	gravity_x = 0.0f;
-	gravity_y = -2.0f;
+	gravity_y = -9.8f;
 	tileSheet = loadTexture("arne_sprites.png", GL_NEAREST);
 	fontTexture = loadTexture("font1.png", GL_NEAREST);
 	bgTexture = loadTexture("colored_grass.png");
@@ -80,7 +80,6 @@ GLvoid GameEngine::Update(){
 }
 GLvoid GameEngine::Render(){
 	DrawBackground();
-
 	drawLevel();
 	Entity::drawAll();
 	
@@ -202,7 +201,7 @@ GLvoid GameEngine::DrawBackground(GLfloat offsetX){
 }
 
 GLvoid GameEngine::buildLevel(){
-	ifstream infile("LevelSet.txt");
+	ifstream infile("levelData.txt");
 	string line;
 	while (getline(infile, line)) {
 			if (line == "[header]") {
