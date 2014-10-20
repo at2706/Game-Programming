@@ -21,6 +21,8 @@ private:
 	enum GameState { STATE_MAIN_MENU, STATE_GAME_LEVEL, STATE_GAME_OVER };
 	unsigned char **levelData;
 
+	Mix_Chunk *jumpSound;
+
 	GLvoid Setup();
 	GLvoid time();
 	GLuint loadTexture(const char *image_path, GLint param = GL_LINEAR);
@@ -35,6 +37,8 @@ private:
 	GLboolean readEntityData(ifstream &stream);
 	GLvoid placeEntity(string &type, GLfloat x, GLfloat y);
 
+	GLvoid tileCollision();
+		
 	GLvoid drawPlatformHorizontal(GLfloat length, GLfloat x, GLfloat y);
 
 	GLvoid reset();

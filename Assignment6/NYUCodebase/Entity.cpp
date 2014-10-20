@@ -40,6 +40,10 @@ GLvoid Entity::drawAll(){
 GLfloat Entity::lerp(GLfloat v0, GLfloat v1, GLfloat t) {
 	return (1.0 - t)*v0 + t*v1;
 }
+GLvoid Entity::worldToTileCoordinates(float worldX, float worldY, int *gridX, int *gridY) {
+	*gridX = (int)((worldX) / TILE_SIZE);
+	*gridY = (int)((-worldY) / TILE_SIZE);
+}
 
 GLvoid Entity::fixedUpdate(GLfloat gravity_x, GLfloat gravity_y){
 	collidedTop = false;

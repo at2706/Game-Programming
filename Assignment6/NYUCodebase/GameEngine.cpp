@@ -11,7 +11,9 @@ GameEngine::GameEngine(){
 	bgTexture = loadTexture("colored_grass.png");
 	state = STATE_MAIN_MENU;
 
-	sprite = new SpriteUniformed(tileSheet, 80, 16, 8);
+	jumpSound = Mix_LoadWAV("jump.wav");
+
+	sprite = new SpriteUniformed(tileSheet, 98, 16, 8);
 	hero = new Entity(sprite,0.0f,0.2f);
 	hero->setMovement(3.0f, 0.75f, 0.75f, 2.0f, 2.0f);
 
@@ -19,6 +21,8 @@ GameEngine::GameEngine(){
 }
 
 GameEngine::~GameEngine(){
+	Mix_FreeChunk(jumpSound);
+
 	SDL_Quit();
 }
 
@@ -30,7 +34,7 @@ GLboolean GameEngine::ProcessEvents(){
 			return false;
 		}
 	}
-	// Keyboard Events
+	 //Keyboard Events
 	if (keys[SDL_SCANCODE_RIGHT]) {
 		hero->isIdle = false;
 		hero->facing = 0.0f;
@@ -44,6 +48,7 @@ GLboolean GameEngine::ProcessEvents(){
 	}
 
 	if (keys[SDL_SCANCODE_UP] && hero->collidedBottom){
+		Mix_PlayChannel(-1, jumpSound, 0);
 		hero->velocity_y = 2.5f;
 	}
 
@@ -77,6 +82,8 @@ GLvoid GameEngine::Update(){
 }
 GLvoid GameEngine::Render(){
 	DrawBackground();
+	glLoadIdentity();
+	glTranslatef(-hero->x, -hero->y, 0.0f);
 	drawLevel();
 	Entity::drawAll();
 	
@@ -124,6 +131,7 @@ GLvoid GameEngine::Setup(){
 	glOrtho(-ASPECT_RATIO_X, ASPECT_RATIO_X, -ASPECT_RATIO_Y, ASPECT_RATIO_Y, -1.0, 1.0);
 	glMatrixMode(GL_MODELVIEW);
 
+	Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096);
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	elapsed = 0;
 	lastFrameTicks = 0;
@@ -198,7 +206,7 @@ GLvoid GameEngine::DrawBackground(GLfloat offsetX){
 }
 
 GLvoid GameEngine::buildLevel(){
-	ifstream infile("levelData.txt");
+	ifstream infile("levelSet.txt");
 	string line;
 	while (getline(infile, line)) {
 			if (line == "[header]") {
@@ -214,7 +222,6 @@ GLvoid GameEngine::buildLevel(){
 			}
 	}
 }
-
 GLvoid GameEngine::drawLevel(){
 	vector<GLfloat> vertexData;
 	vector<GLfloat> texCoordData;
@@ -357,6 +364,8 @@ GLvoid GameEngine::drawPlatformHorizontal(GLfloat length, GLfloat x, GLfloat y){
 		platform->isStatic = true;
 	}
 }
+
+
 
 /*
 	vectors are relative
