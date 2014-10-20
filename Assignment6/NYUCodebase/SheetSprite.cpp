@@ -18,7 +18,7 @@ GLvoid SheetSprite::draw(GLfloat x, GLfloat y, GLfloat scale){
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, textureID);
 	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
+	glPushMatrix();
 	glTranslatef(x, y, 0.0);
 	GLfloat quad[] = {	-width * scale, height * scale / 2,
 						-width * scale, -height * scale / 2,
@@ -34,6 +34,7 @@ GLvoid SheetSprite::draw(GLfloat x, GLfloat y, GLfloat scale){
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDrawArrays(GL_QUADS, 0, 4);
 	glDisable(GL_TEXTURE_2D);
+	glPopMatrix();
 }
 
 SpriteUniformed::SpriteUniformed(GLuint texID, GLint index, GLint SpriteCountX, GLint SpriteCountY)
@@ -43,7 +44,7 @@ SpriteUniformed::SpriteUniformed(GLuint texID, GLint index, GLint SpriteCountX, 
 	v = (GLfloat)(((GLint)index) / spriteCountX) / (GLfloat)spriteCountY;
 
 
-	width = 1.0 / (GLfloat)spriteCountX;
+	width = (spriteCountX / spriteCountY) / (GLfloat)spriteCountX;
 	height = 1.0 / (GLfloat)spriteCountY;
 }
 
@@ -52,19 +53,19 @@ GLvoid SpriteUniformed::draw(GLfloat x, GLfloat y, GLfloat scale){
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, textureID);
 	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
+	glPushMatrix();
 	glTranslatef(x, y, 0.0);
-	GLfloat quad[] = {	-width * scale, height * scale / 2,
-						-width * scale, -height * scale / 2,
-						width * scale, -height * scale / 2,
-						width * scale, height * scale / 2 };
+	GLfloat quad[] = {	-width * scale / 2, height * scale / 2,
+		-width * scale / 2, -height * scale / 2,
+		width * scale / 2, -height * scale / 2,
+		width * scale / 2, height * scale / 2 };
 	glVertexPointer(2, GL_FLOAT, 0, quad);
 	glEnableClientState(GL_VERTEX_ARRAY);
 
 	GLfloat quadUVs[] = {	u, v,
 							u, v + height,
-							u + width, v + height,
-							u + width, v};
+							u + (width / (spriteCountX / spriteCountY)), v + height,
+							u + (width / (spriteCountX / spriteCountY)), v };
 
 	glTexCoordPointer(2, GL_FLOAT, 0, quadUVs);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -72,4 +73,5 @@ GLvoid SpriteUniformed::draw(GLfloat x, GLfloat y, GLfloat scale){
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDrawArrays(GL_QUADS, 0, 4);
 	glDisable(GL_TEXTURE_2D);
+	glPopMatrix();
 }

@@ -28,6 +28,7 @@ Entity::Entity(SheetSprite *sheet, GLfloat posX, GLfloat posY,
 
 Entity::~Entity(){ entities.erase(id); }
 GLvoid Entity::draw(){
+	//sprite->index = animationIndex;
 	if (isVisable)
 	sprite->draw(x, y, scale);
 
@@ -36,7 +37,7 @@ GLvoid Entity::drawAll(){
 	for (vector<Entity*>::iterator it = entities.begin(); it != entities.end(); ++it)
 		(*it)->draw();
 }
-GLfloat Entity::lerp(float v0, float v1, float t) {
+GLfloat Entity::lerp(GLfloat v0, GLfloat v1, GLfloat t) {
 	return (1.0 - t)*v0 + t*v1;
 }
 
@@ -84,6 +85,10 @@ GLvoid Entity::setMovement(GLfloat s, GLfloat accelX, GLfloat accelY, GLfloat Fr
 GLvoid Entity::setRotation(GLfloat degree){
 	rotation = degree;
 }
+GLvoid Entity::setAnimation(GLuint *arr){
+	animationFrames = arr;
+}
+
 GLvoid Entity::rotate(GLfloat degree){
 	rotation += degree;
 	if (rotation > 360.0f)	rotation -= 360.0f;

@@ -35,6 +35,8 @@ private:
 	GLboolean readEntityData(ifstream &stream);
 	GLvoid placeEntity(string &type, GLfloat x, GLfloat y);
 
+	GLvoid drawPlatformHorizontal(GLfloat length, GLfloat x, GLfloat y);
+
 	GLvoid reset();
 	GLint mapWidth;
 	GLint mapHeight;
@@ -51,7 +53,7 @@ private:
 	Entity *bullets[MAX_BULLETS];
 	Entity *enemies[MAX_ENEMIES];
 
-	GLuint charSheet;
+	GLuint tileSheet;
 	GLuint fontTexture;
 	GLuint bgTexture;
 	GLint score;

@@ -77,10 +77,12 @@
     <ClCompile Include="GameEngine.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="SheetSprite.cpp" />
+    <ClCompile Include="UIElement.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity.h" />
     <ClInclude Include="GameEngine.h" />
+    <ClInclude Include="UIElement.h" />
     <ClInclude Include="Utilities.h" />
     <ClInclude Include="SheetSprite.h" />
   </ItemGroup>

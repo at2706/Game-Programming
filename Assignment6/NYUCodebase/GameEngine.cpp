@@ -5,15 +5,21 @@ GameEngine::GameEngine(){
 	buildLevel();
 	elapsed = 0;
 	gravity_x = 0.0f;
-	gravity_y = -1.0f;
-	charSheet = loadTexture("arne_sprites.png", GL_NEAREST);
+	gravity_y = -2.0f;
+	tileSheet = loadTexture("arne_sprites.png", GL_NEAREST);
 	fontTexture = loadTexture("font1.png", GL_NEAREST);
 	bgTexture = loadTexture("colored_grass.png");
 	state = STATE_MAIN_MENU;
 
-	sprite = new SpriteUniformed(charSheet, 3, 16, 8);
+	sprite = new SpriteUniformed(tileSheet, 18, 16, 8);
 	platform = new Entity(sprite);
 	platform->isStatic = true;
+
+	sprite = new SpriteUniformed(tileSheet, 80, 16, 8);
+	hero = new Entity(sprite,0.0f,0.2f);
+	hero->setMovement(3.0f, 0.75f, 0.75f, 2.0f, 2.0f);
+
+	drawPlatformHorizontal(20, 0.0f, -0.3f);
 }
 
 GameEngine::~GameEngine(){
@@ -29,6 +35,21 @@ GLboolean GameEngine::ProcessEvents(){
 		}
 	}
 	// Keyboard Events
+	if (keys[SDL_SCANCODE_RIGHT]) {
+		hero->isIdle = false;
+		hero->facing = 0.0f;
+	}
+	else if (keys[SDL_SCANCODE_LEFT]) {
+		hero->isIdle = false;
+		hero->facing = 180.0f;
+	}
+	else{
+		hero->isIdle = true;
+	}
+
+	if (keys[SDL_SCANCODE_UP])
+		hero->velocity_y = 1.0f;
+
 	switch (state){
 	case STATE_MAIN_MENU:
 	
@@ -58,10 +79,10 @@ GLvoid GameEngine::Update(){
 	}
 }
 GLvoid GameEngine::Render(){
-	//DrawBackground();
+	DrawBackground();
 
 	drawLevel();
-	platform->draw();
+	Entity::drawAll();
 	
 	switch (state){
 	case STATE_MAIN_MENU:
@@ -127,7 +148,7 @@ GLvoid GameEngine::DrawText(string text, GLfloat size, GLfloat spacing, GLfloat 
 	glBindTexture(GL_TEXTURE_2D, fontTexture);
 	glEnable(GL_BLEND);
 	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
+	glPopMatrix();
 	glTranslatef(x, y, 0.0);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	GLfloat texture_size = 1.0 / 16.0f;
@@ -158,6 +179,7 @@ GLvoid GameEngine::DrawText(string text, GLfloat size, GLfloat spacing, GLfloat 
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	glPushMatrix();
 }
 GLvoid GameEngine::DrawBackground(GLfloat offsetX){
 	glEnable(GL_TEXTURE_2D);
@@ -201,25 +223,27 @@ GLvoid GameEngine::drawLevel(){
 	vector<GLfloat> vertexData;
 	vector<GLfloat> texCoordData;
 	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, charSheet);
+	glBindTexture(GL_TEXTURE_2D, tileSheet);
 	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	glTranslatef(-TILE_SIZE * mapWidth / 2, TILE_SIZE * mapHeight / 2, 0.0f);
-	for (int y = 0; y < mapHeight; y++) {
-		for (int x = 0; x < mapWidth; x++) {
-			float u = (float)(((int)levelData[y][x]) % SPRITE_COUNT_X) / (float)SPRITE_COUNT_X;
-			float v = (float)(((int)levelData[y][x]) / SPRITE_COUNT_X) / (float)SPRITE_COUNT_Y;
-			float spriteWidth = 1.0f / (float)SPRITE_COUNT_X;
-			float spriteHeight = 1.0f / (float)SPRITE_COUNT_Y;
-			vertexData.insert(vertexData.end(), {
-				TILE_SIZE * x, -TILE_SIZE * y,
-				TILE_SIZE * x, (-TILE_SIZE * y) - TILE_SIZE,
-				(TILE_SIZE * x) + TILE_SIZE, (-TILE_SIZE * y) - TILE_SIZE,
-				(TILE_SIZE * x) + TILE_SIZE, -TILE_SIZE * y});
-			texCoordData.insert(texCoordData.end(), { u, v,
-				u, v + (spriteHeight),
-				u + spriteWidth, v + (spriteHeight),
-				u + spriteWidth, v});
+	glPushMatrix();
+	glTranslatef((-TILE_SIZE * mapWidth / 2), (TILE_SIZE * mapHeight / 2), 0.0f);
+	for (GLint y = 0; y < mapHeight; y++) {
+		for (GLint x = 0; x < mapWidth; x++) {
+			if (levelData[y][x] != 0) {
+				GLfloat u = (GLfloat)(((GLint)levelData[y][x]) % SPRITE_COUNT_X) / (GLfloat)SPRITE_COUNT_X;
+				GLfloat v = (GLfloat)(((GLint)levelData[y][x]) / SPRITE_COUNT_X) / (GLfloat)SPRITE_COUNT_Y;
+				GLfloat spriteWidth = 1.0f / (GLfloat)SPRITE_COUNT_X;
+				GLfloat spriteHeight = 1.0f / (GLfloat)SPRITE_COUNT_Y;
+				vertexData.insert(vertexData.end(), {
+					TILE_SIZE * x, -TILE_SIZE * y,
+					TILE_SIZE * x, (-TILE_SIZE * y) - TILE_SIZE,
+					(TILE_SIZE * x) + TILE_SIZE, (-TILE_SIZE * y) - TILE_SIZE,
+					(TILE_SIZE * x) + TILE_SIZE, -TILE_SIZE * y });
+					texCoordData.insert(texCoordData.end(), { u, v,
+						u, v + (spriteHeight),
+						u + spriteWidth, v + (spriteHeight),
+						u + spriteWidth, v });
+			}
 		}
 	}
 
@@ -227,10 +251,11 @@ GLvoid GameEngine::drawLevel(){
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glTexCoordPointer(2, GL_FLOAT, 0, texCoordData.data());
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	glDrawArrays(GL_QUADS, 0, 4);
+	glDrawArrays(GL_QUADS, 0, vertexData.size() / 2);
 	glDisable(GL_TEXTURE_2D);
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	glPopMatrix();
 }
 
 GLboolean GameEngine::readHeader(ifstream &stream){
@@ -255,7 +280,7 @@ GLboolean GameEngine::readHeader(ifstream &stream){
 	}
 	else { // allocate our map data
 		levelData = new unsigned char*[mapHeight];
-		for (int i = 0; i < mapHeight; ++i) {
+		for (GLint i = 0; i < mapHeight; ++i) {
 			levelData[i] = new unsigned char[mapWidth];
 		}
 		return true;
@@ -271,11 +296,11 @@ GLboolean GameEngine::readLayerData(ifstream &stream){
 		getline(sStream, key, '=');
 		getline(sStream, value);
 		if (key == "data") {
-			for (int y = 0; y < mapHeight; y++) {
+			for (GLint y = 0; y < mapHeight; y++) {
 				getline(stream, line);
 				istringstream lineStream(line);
 				string tile;
-				for (int x = 0; x < mapWidth; x++) {
+				for (GLint x = 0; x < mapWidth; x++) {
 					getline(lineStream, tile, ',');
 					unsigned char val = (unsigned char)atoi(tile.c_str());
 					if (val > 0) {
@@ -309,8 +334,8 @@ GLboolean GameEngine::readEntityData(ifstream &stream){
 			string xPosition, yPosition;
 			getline(lineStream, xPosition, ',');
 			getline(lineStream, yPosition, ',');
-			float placeX = atoi(xPosition.c_str()) / 16 * TILE_SIZE;
-			float placeY = atoi(yPosition.c_str()) / 16 * -TILE_SIZE;
+			GLfloat placeX = atoi(xPosition.c_str()) / 16 * TILE_SIZE;
+			GLfloat placeY = atoi(yPosition.c_str()) / 16 * -TILE_SIZE;
 			placeEntity(type, placeX, placeY);
 		}
 	}
@@ -318,31 +343,21 @@ GLboolean GameEngine::readEntityData(ifstream &stream){
 }
 
 GLvoid GameEngine::placeEntity(string &type, GLfloat x, GLfloat y){
+	if (type == "Start"){
+		hero->x = x;
+		hero->y = y;
+	}
 
+	else{
+		
+	}
 }
 
-/*
-	(rand()%10 < 7)
-
-	doSimulationStep(){
-		unsigned char newData[level_hieght][level_width];
-
-		for loop x
-			for loop y
-				int nbs countAliveNeighbors (x , y)
-
-				if(level data[x][y] != 0){
-					if(nbs < deathLimit){
-						newData[x][y] = 0;
-					}
-					else
-					newData[x][y] = random block;
-				}
-				else{
-					if (nbs> birthLimit){
-					}
-				}
-
-
+GLvoid GameEngine::drawPlatformHorizontal(GLfloat length, GLfloat x, GLfloat y){
+	sprite = new SpriteUniformed(tileSheet, 3, 16, 8);
+	for (GLfloat i = -(length / 2); i < (length / 2); i++)
+	{
+		platform = new Entity(sprite, (i * sprite->width) + x, y);
+		platform->isStatic = true;
 	}
-*/
+}
