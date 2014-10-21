@@ -34,6 +34,7 @@ public:
 	GLvoid collisionPenX();
 	GLvoid collisionPenY();
 
+	GLvoid tileCollisionY(unsigned char **levelData, GLint *solidTiles);
 
 	static vector<Entity*> entities;
 	static GLvoid drawAll();

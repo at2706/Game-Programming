@@ -192,3 +192,17 @@ GLvoid Entity::collisionPenX(){
 		}
 	}
 }
+
+GLvoid Entity::tileCollisionY(unsigned char **levelData, GLint *solidTiles){
+	GLint *gridX, *gridY;
+	worldToTileCoordinates(x, y, gridX, gridY);
+	
+	int tileBot = levelData[*gridY][*gridX - 1];
+	int tileTop = levelData[*gridY][*gridX + 1];
+	int tileLeft = levelData[*gridY - 1][*gridX];
+	int tileRight = levelData[*gridY + 1][*gridX];
+
+	if (find(solidTiles, solidTiles + sizeof solidTiles, tileBot)){
+
+	}
+}

@@ -289,7 +289,6 @@ GLboolean GameEngine::readHeader(ifstream &stream){
 		return true;
 	}
 }
-
 GLboolean GameEngine::readLayerData(ifstream &stream){
 	string line;
 	while (getline(stream, line)) {
@@ -319,7 +318,6 @@ GLboolean GameEngine::readLayerData(ifstream &stream){
 	}
 	return true;
 }
-
 GLboolean GameEngine::readEntityData(ifstream &stream){
 	string line;
 	string type;
@@ -364,8 +362,6 @@ GLvoid GameEngine::drawPlatformHorizontal(GLfloat length, GLfloat x, GLfloat y){
 		platform->isStatic = true;
 	}
 }
-
-
 
 /*
 	vectors are relative
