@@ -29,3 +29,6 @@
 #define TILE_SIZE 0.125f
 #define SPRITE_COUNT_X 16
 #define SPRITE_COUNT_Y 8
+
+#define MARGIN_X 1.5f
+#define MARGIN_Y 1.0f

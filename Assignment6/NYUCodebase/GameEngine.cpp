@@ -81,8 +81,12 @@ GLvoid GameEngine::Update(){
 GLvoid GameEngine::Render(){
 	DrawBackground();
 	glLoadIdentity();
+	GLfloat panX = (hero->x < MARGIN_X) ? -MARGIN_X : -hero->x;
+	panX = (hero->x >(mapWidth * TILE_SIZE) - MARGIN_X) ? -mapWidth * TILE_SIZE + MARGIN_X : panX;
+	GLfloat panY = (hero->y > -MARGIN_Y) ? MARGIN_Y : -hero->y;
+	panY = (hero->y < -(mapHeight * TILE_SIZE) + MARGIN_Y) ? (mapHeight * TILE_SIZE) - MARGIN_Y : panY;
 
-	glTranslatef(-hero->x, -hero->y, 0.0f);
+	glTranslatef(panX, panY, 0.0f);
 	drawLevel();
 	Entity::drawAll();
 	switch (state){
