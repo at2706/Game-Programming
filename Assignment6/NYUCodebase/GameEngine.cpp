@@ -2,9 +2,6 @@
 
 GameEngine::GameEngine(){
 	Setup();
-	buildLevel();
-	GLint solidTiles1[2] = { 17, 12 };
-	solidTiles = solidTiles1;
 	elapsed = 0;
 	gravity_x = 0.0f;
 	gravity_y = -9.8f;
@@ -16,10 +13,10 @@ GameEngine::GameEngine(){
 	jumpSound = Mix_LoadWAV("jump.wav");
 
 	sprite = new SpriteUniformed(tileSheet, 98, 16, 8);
-	hero = new Entity(sprite,0.0f,0.2f);
+	hero = new Entity(sprite);
 	hero->setMovement(3.0f, 0.75f, 0.75f, 2.0f, 2.0f);
 
-	drawPlatformHorizontal(20, 0.0f, -0.3f);
+	buildLevel();
 }
 
 GameEngine::~GameEngine(){
@@ -208,7 +205,7 @@ GLvoid GameEngine::DrawBackground(GLfloat offsetX){
 }
 
 GLvoid GameEngine::buildLevel(){
-	ifstream infile("levelSet.txt");
+	ifstream infile("LevelData.txt");
 	string line;
 	while (getline(infile, line)) {
 			if (line == "[header]") {
@@ -231,7 +228,7 @@ GLvoid GameEngine::drawLevel(){
 	glBindTexture(GL_TEXTURE_2D, tileSheet);
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
-	glTranslatef((-TILE_SIZE * mapWidth / 2), (TILE_SIZE * mapHeight / 2), 0.0f);
+	glTranslatef((-TILE_SIZE / 2), (-TILE_SIZE / 2), 0.0f);
 	for (GLint y = 0; y < mapHeight; y++) {
 		for (GLint x = 0; x < mapWidth; x++) {
 			if (levelData[y][x] != 0) {
@@ -351,8 +348,8 @@ GLvoid GameEngine::placeEntity(string &type, GLfloat x, GLfloat y){
 		hero->y = y;
 	}
 
-	else{
-		
+	if(type == "platform"){
+		drawPlatformHorizontal(4, x, y);
 	}
 }
 

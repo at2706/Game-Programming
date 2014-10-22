@@ -120,7 +120,7 @@ GLvoid Entity::decelerateX(){
 
 GLvoid Entity::decelerateY(){
 	GLfloat radian = (facing * PI) / 180.0f;
-	velocity_y = lerp(velocity_y, 0.0f, FIXED_TIMESTEP * friction_y);
+	//velocity_y = lerp(velocity_y, 0.0f, FIXED_TIMESTEP * friction_y);
 	y += velocity_y * FIXED_TIMESTEP;
 }
 

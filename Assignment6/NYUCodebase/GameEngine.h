@@ -21,7 +21,6 @@ private:
 	const Uint8 *keys = SDL_GetKeyboardState(NULL);
 	enum GameState { STATE_MAIN_MENU, STATE_GAME_LEVEL, STATE_GAME_OVER };
 	unsigned char **levelData;
-	GLint *solidTiles;
 
 	Mix_Chunk *jumpSound;
 
