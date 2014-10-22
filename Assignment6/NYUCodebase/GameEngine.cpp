@@ -9,12 +9,11 @@ GameEngine::GameEngine(){
 	fontTexture = loadTexture("font1.png", GL_NEAREST);
 	bgTexture = loadTexture("colored_grass.png");
 	state = STATE_MAIN_MENU;
-
 	jumpSound = Mix_LoadWAV("jump.wav");
 
 	sprite = new SpriteUniformed(tileSheet, 98, 16, 8);
 	hero = new Entity(sprite);
-	hero->setMovement(3.0f, 0.75f, 0.75f, 2.0f, 2.0f);
+	hero->setMovement(3.0f, 1.0f, 0.75f, 3.0f, 2.0f);
 
 	buildLevel();
 }
@@ -48,7 +47,7 @@ GLboolean GameEngine::ProcessEvents(){
 
 	if (keys[SDL_SCANCODE_UP] && hero->collidedBottom){
 		Mix_PlayChannel(-1, jumpSound, 0);
-		hero->velocity_y = 2.5f;
+		hero->velocity_y = 3.0f;
 	}
 
 	switch (state){

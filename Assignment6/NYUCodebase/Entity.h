@@ -1,6 +1,7 @@
 #pragma once
 #include "Utilities.h"
 #include "SheetSprite.h"
+#include "Matrix.h"
 using namespace std;
 class Entity{
 public:
@@ -11,6 +12,7 @@ public:
 	GLvoid draw();
 	virtual GLvoid fixedUpdate(GameEngine *g);
 	GLfloat lerp(GLfloat v0, GLfloat v1, GLfloat t);
+	GLvoid buildMatrix();
 	GLvoid worldToTileCoordinates(GLfloat worldX, GLfloat worldY, GLint *gridX, GLint *gridY);
 
 	GLvoid setSize(GLfloat w, GLfloat h);
@@ -41,10 +43,15 @@ public:
 	static GLvoid drawAll();
 	static GLvoid fixedUpdateAll(GameEngine *g);
 
+	Matrix matrix;
+
 	GLfloat x;
 	GLfloat y;
 	GLint gridX;
 	GLint gridY;
+
+	float scale_x;
+	float scale_y;
 
 protected:
 	friend class GameEngine;

@@ -49,5 +49,5 @@ location=114.087,205.836,0,0
 
 [ObjectsLayer]
 type=platform
-location=112,240,0,0
+location=112,272,0,0
 

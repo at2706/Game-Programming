@@ -52,6 +52,8 @@ GLvoid Entity::fixedUpdate(GameEngine *g){
 	collidedLeft = false;
 	collidedRight = false;
 	if (!isStatic){
+		GLint *gridXptr = &gridX, *gridYptr = &gridY;
+		worldToTileCoordinates(x, y, gridXptr, gridYptr);
 		if (!isIdle){
 			moveY();
 			collisionPenY();
@@ -197,13 +199,8 @@ GLvoid Entity::collisionPenX(){
 }
 
 GLvoid Entity::tileCollisionY(GameEngine *g){
-	GLint *gridXptr = &gridX, *gridYptr = &gridY;
-	worldToTileCoordinates(x, y, gridXptr, gridYptr);
-	if (gridY < 1) {
-		return;
-	}
-	GLfloat top = y + ((sprite->height * scale) / 2);
-	GLfloat bot = y - ((sprite->height * scale) / 2);
+	if (gridY < 0) { return; }
+	if (gridX < 0) { return; }
 	
 	GLint tileBot = g->levelData[gridY][gridX];
 	GLint tileTop = g->levelData[gridY - 1][gridX];
@@ -211,30 +208,36 @@ GLvoid Entity::tileCollisionY(GameEngine *g){
 	switch (tileBot){
 	case 1:
 	case 2:
+	case 16:
+	case 17:
+	case 18:
 	case 19:
 	case 20:
-			GLfloat distance_y = fabs(((gridY - 1) * TILE_SIZE) + y);
-			GLfloat height1 = sprite->height * 0.5f * scale;
-			GLfloat height2 = TILE_SIZE * 0.5f;
-			GLfloat yPenetration = fabs(distance_y - height1 - height2);
+		GLfloat distance_y = fabs(((gridY - 1) * TILE_SIZE) + y);
+		GLfloat height1 = sprite->height * 0.5f * scale;
+		GLfloat height2 = TILE_SIZE * 0.5f;
+		GLfloat yPenetration = fabs(distance_y - height1 - height2);
 
-			y += yPenetration + 0.0001f;
-			collidedBottom = true;
+		y += yPenetration + 0.0001f;
+		collidedBottom = true;
 
-			velocity_y = 0.0f;
+		velocity_y = 0.0f;
 	}
 
 	switch (tileTop){
 	case 1:
 	case 2:
+	case 16:
+	case 17:
+	case 18:
 	case 19:
 	case 20:
-		GLfloat distance_y = fabs(((gridY + 1) * TILE_SIZE) + y);
+		GLfloat distance_y = fabs(((gridY)* TILE_SIZE) + y);
 		GLfloat height1 = sprite->height * 0.5f * scale;
 		GLfloat height2 = TILE_SIZE * 0.5f;
 		GLfloat yPenetration = fabs(distance_y - height1 - height2);
 
-		y += yPenetration - 0.0001f;
+		y += yPenetration - 0.01f;
 		collidedBottom = true;
 
 		velocity_y = 0.0f;
@@ -285,3 +288,20 @@ GLvoid Entity::tileCollisionX(GameEngine *g){
 		velocity_y = 0.0f;
 	}
 }
+
+/*GLvoid Entity:: buildMatrix(){
+	
+	scale * rotate * translatioin
+}
+
+corners are vectors
+ent2TL = Vector(-entity2->width / 2, entity2->height /2, 0.0f);
+ent2TL = entity2->matrix * ent2TL;
+ent2TL entity1Inverse * ent2TL;
+
+std::min of all corners
+
+if(!(minX <= entity1-> width/2 && maxX >= entity1->width/2)){ return false; }
+
+
+*/
