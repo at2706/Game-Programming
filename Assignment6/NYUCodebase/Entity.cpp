@@ -1,4 +1,5 @@
 #include "Entity.h"
+#include "GameEngine.h"
 
 vector<Entity*> Entity::entities;
 Entity::Entity(SheetSprite *sheet, GLfloat posX, GLfloat posY,
@@ -45,7 +46,7 @@ GLvoid Entity::worldToTileCoordinates(float worldX, float worldY, int *gridX, in
 	*gridY = (int)((-worldY) / TILE_SIZE);
 }
 
-GLvoid Entity::fixedUpdate(GLfloat gravity_x, GLfloat gravity_y){
+GLvoid Entity::fixedUpdate(GameEngine *g){
 	collidedTop = false;
 	collidedBottom = false;
 	collidedLeft = false;
@@ -54,6 +55,7 @@ GLvoid Entity::fixedUpdate(GLfloat gravity_x, GLfloat gravity_y){
 		if (!isIdle){
 			moveY();
 			collisionPenY();
+			tileCollisionY(g);
 			moveX();
 			collisionPenX();
 		}
@@ -65,14 +67,14 @@ GLvoid Entity::fixedUpdate(GLfloat gravity_x, GLfloat gravity_y){
 		}
 
 		if (enableGravity && !collidedBottom){
-			velocity_x += gravity_x * FIXED_TIMESTEP;
-			velocity_y += gravity_y * FIXED_TIMESTEP;
+			velocity_x += g->gravity_x * FIXED_TIMESTEP;
+			velocity_y += g->gravity_y * FIXED_TIMESTEP;
 		}
 	}
 }
-GLvoid Entity::fixedUpdateAll(GLfloat gravity_x, GLfloat gravity_y){
+GLvoid Entity::fixedUpdateAll(GameEngine *g){
 	for (vector<Entity*>::iterator it = entities.begin(); it != entities.end(); ++it)
-		(*it)->fixedUpdate(gravity_x, gravity_y);
+		(*it)->fixedUpdate(g);
 }
 
 GLvoid Entity::setPos(GLfloat posX, GLfloat posY){
@@ -193,16 +195,41 @@ GLvoid Entity::collisionPenX(){
 	}
 }
 
-GLvoid Entity::tileCollisionY(unsigned char **levelData, GLint *solidTiles){
-	GLint *gridX, *gridY;
-	worldToTileCoordinates(x, y, gridX, gridY);
+GLvoid Entity::tileCollisionY(GameEngine *g){
+	GLint gridX = 0;
+	GLint gridY = 0;
+	worldToTileCoordinates(x, y, &gridX, &gridY);
+	GLfloat top = y + ((sprite->height * scale) / 2);
+	GLfloat bot = y - ((sprite->height * scale) / 2);
 	
-	int tileBot = levelData[*gridY][*gridX - 1];
-	int tileTop = levelData[*gridY][*gridX + 1];
-	int tileLeft = levelData[*gridY - 1][*gridX];
-	int tileRight = levelData[*gridY + 1][*gridX];
+	GLint tileBot = g->levelData[gridY - 1][gridX];
+	GLint tileTop = g->levelData[gridY + 1][gridX];
 
-	if (find(solidTiles, solidTiles + sizeof solidTiles, tileBot)){
+	if (find(g->solidTiles, g->solidTiles + sizeof g->solidTiles, tileBot) && y > (gridY - 1)){
+		GLfloat distance_y = fabs(gridY - 1 - y);
+		GLfloat height1 = sprite->height * 0.5f * scale;
+		GLfloat height2 = TILE_SIZE * 0.5f;
+		GLfloat yPenetration = fabs(distance_y - height1 - height2);
 
+		y += yPenetration + 0.0001f;
+		collidedBottom = true;
+
+		velocity_y = 0.0f;
 	}
+
+}
+
+GLvoid Entity::tileCollisionX(GameEngine *g){
+	GLint *gridX = 0, *gridY = 0;
+	worldToTileCoordinates(x, y, gridX, gridY);
+	GLfloat left = x - ((sprite->width * scale) / 2);
+	GLfloat right = x + ((sprite->width * scale) / 2);
+
+	int tileLeft = g->levelData[*gridY][*gridX - 1];
+	int tileRight = g->levelData[*gridY][*gridX + 1];
+
+	if (find(g->solidTiles, g->solidTiles + sizeof g->solidTiles, tileLeft)){
+		
+	}
+
 }

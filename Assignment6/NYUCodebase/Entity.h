@@ -9,7 +9,7 @@ public:
 	~Entity();
 
 	GLvoid draw();
-	virtual GLvoid fixedUpdate(GLfloat gravity_x, GLfloat gravity_y);
+	virtual GLvoid fixedUpdate(GameEngine *g);
 	GLfloat lerp(GLfloat v0, GLfloat v1, GLfloat t);
 	GLvoid worldToTileCoordinates(GLfloat worldX, GLfloat worldY, GLint *gridX, GLint *gridY);
 
@@ -34,11 +34,12 @@ public:
 	GLvoid collisionPenX();
 	GLvoid collisionPenY();
 
-	GLvoid tileCollisionY(unsigned char **levelData, GLint *solidTiles);
+	GLvoid tileCollisionY(GameEngine *g);
+	GLvoid tileCollisionX(GameEngine *g);
 
 	static vector<Entity*> entities;
 	static GLvoid drawAll();
-	static GLvoid fixedUpdateAll(GLfloat gravity_x, GLfloat gravity_y);
+	static GLvoid fixedUpdateAll(GameEngine *g);
 
 	GLfloat x;
 	GLfloat y;

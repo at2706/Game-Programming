@@ -3,6 +3,8 @@
 GameEngine::GameEngine(){
 	Setup();
 	buildLevel();
+	GLint solidTiles1[2] = { 17, 12 };
+	solidTiles = solidTiles1;
 	elapsed = 0;
 	gravity_x = 0.0f;
 	gravity_y = -9.8f;
@@ -115,7 +117,7 @@ GLvoid GameEngine::time(){
 
 	while (fixedElapsed >= FIXED_TIMESTEP) {
 		fixedElapsed -= FIXED_TIMESTEP;
-		Entity::fixedUpdateAll(gravity_x,gravity_y);
+		Entity::fixedUpdateAll(this);
 	}
 	timeLeftOver = fixedElapsed;
 

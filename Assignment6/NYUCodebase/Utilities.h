@@ -26,6 +26,6 @@
 
 #define LEVEL_HEIGHT 22
 #define LEVEL_WIDTH 32
-#define TILE_SIZE 0.12f
+#define TILE_SIZE 0.125f
 #define SPRITE_COUNT_X 16
 #define SPRITE_COUNT_Y 8

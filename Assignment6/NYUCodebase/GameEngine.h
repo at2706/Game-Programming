@@ -16,10 +16,12 @@ public:
 
 private:
 	//Game Constants
+	friend class Entity;
 	SDL_Window* displayWindow;
 	const Uint8 *keys = SDL_GetKeyboardState(NULL);
 	enum GameState { STATE_MAIN_MENU, STATE_GAME_LEVEL, STATE_GAME_OVER };
 	unsigned char **levelData;
+	GLint *solidTiles;
 
 	Mix_Chunk *jumpSound;
 
@@ -36,8 +38,6 @@ private:
 	GLboolean readLayerData(ifstream &stream);
 	GLboolean readEntityData(ifstream &stream);
 	GLvoid placeEntity(string &type, GLfloat x, GLfloat y);
-
-	GLvoid tileCollision();
 		
 	GLvoid drawPlatformHorizontal(GLfloat length, GLfloat x, GLfloat y);
 
