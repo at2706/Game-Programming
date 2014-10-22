@@ -32,18 +32,19 @@ private:
 
 	GLvoid buildLevel();
 	GLvoid drawLevel();
-
+	
 	GLboolean readHeader(ifstream &stream);
 	GLboolean readLayerData(ifstream &stream);
 	GLboolean readEntityData(ifstream &stream);
 	GLvoid placeEntity(string &type, GLfloat x, GLfloat y);
+	GLboolean isSolidTile(unsigned char t);
 		
 	GLvoid drawPlatformHorizontal(GLfloat length, GLfloat x, GLfloat y);
 
 	GLvoid reset();
+	
 	GLint mapWidth;
 	GLint mapHeight;
-
 
 	GLfloat timeLeftOver = 0.0f;
 	GLfloat elapsed;

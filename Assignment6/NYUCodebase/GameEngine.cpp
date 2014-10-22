@@ -13,7 +13,7 @@ GameEngine::GameEngine(){
 
 	sprite = new SpriteUniformed(tileSheet, 98, 16, 8);
 	hero = new Entity(sprite);
-	hero->setMovement(3.0f, 1.0f, 0.75f, 3.0f, 2.0f);
+	hero->setMovement(3.0f, 3.0f, 0.75f, 3.0f, 2.0f);
 
 	buildLevel();
 }
@@ -81,10 +81,10 @@ GLvoid GameEngine::Update(){
 GLvoid GameEngine::Render(){
 	DrawBackground();
 	glLoadIdentity();
+
 	glTranslatef(-hero->x, -hero->y, 0.0f);
 	drawLevel();
 	Entity::drawAll();
-	
 	switch (state){
 	case STATE_MAIN_MENU:
 
@@ -349,6 +349,20 @@ GLvoid GameEngine::placeEntity(string &type, GLfloat x, GLfloat y){
 
 	if(type == "platform"){
 		drawPlatformHorizontal(4, x, y);
+	}
+}
+
+GLboolean GameEngine::isSolidTile(unsigned char t){
+	switch (t){
+	case 1:
+	case 2:
+	case 16:
+	case 17:
+	case 18:
+	case 19:
+	case 20:
+		return true;
+	default: return false;
 	}
 }
 
