@@ -205,9 +205,10 @@ GLvoid Entity::tileCollisionY(GameEngine *g){
 	worldToTileCoordinates(x, y, gridXptr, gridYptr);
 
 	GLint tileBot = g->levelData[gridY][gridX];
+	GLint tileBotRight = g->levelData[gridY][gridX + 1];
 	GLint tileTop = g->levelData[gridY - 1][gridX];
 
-	if (g->isSolidTile(tileBot) && velocity_y < 0.0f){
+	if ((g->isSolidTile(tileBot) || g->isSolidTile(tileBotRight)) && velocity_y < 0.0f){
 		GLfloat distance_y = fabs(((gridY - 1) * TILE_SIZE) + y);
 		GLfloat height1 = sprite->height * 0.5f * scale;
 		GLfloat height2 = TILE_SIZE * 0.5f;
