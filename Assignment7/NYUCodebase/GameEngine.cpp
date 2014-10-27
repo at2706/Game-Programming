@@ -386,4 +386,6 @@ GLvoid GameEngine::drawPlatformHorizontal(GLfloat length, GLfloat x, GLfloat y){
 
 /*
 	vectors are relative
+
+
 */
