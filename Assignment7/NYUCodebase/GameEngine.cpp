@@ -81,14 +81,18 @@ GLvoid GameEngine::Update(){
 GLvoid GameEngine::Render(){
 	DrawBackground();
 	glLoadIdentity();
-	GLfloat panX = (hero->x < MARGIN_X) ? -MARGIN_X : -hero->x;
-	panX = (hero->x >(mapWidth * TILE_SIZE) - MARGIN_X) ? -mapWidth * TILE_SIZE + MARGIN_X : panX;
-	GLfloat panY = (hero->y > -MARGIN_Y) ? MARGIN_Y : -hero->y;
-	panY = (hero->y < -(mapHeight * TILE_SIZE) + MARGIN_Y) ? (mapHeight * TILE_SIZE) - MARGIN_Y : panY;
 
+	GLfloat panX = (hero->x < MARGIN_LEFT) ? -MARGIN_LEFT : -hero->x;
+	panX = (hero->x >(mapWidth * TILE_SIZE) - MARGIN_RIGHT) ? -mapWidth * TILE_SIZE + MARGIN_RIGHT : panX;
+	GLfloat panY = (hero->y > -MARGIN_TOP) ? MARGIN_TOP : -hero->y;
+	panY = (hero->y < -(mapHeight * TILE_SIZE) + MARGIN_BOTTOM) ? (mapHeight * TILE_SIZE) - MARGIN_BOTTOM : panY;
+	
 	glTranslatef(panX, panY, 0.0f);
 	drawLevel();
 	Entity::drawAll();
+
+	glLoadIdentity();
+	DrawText("TEXT", 0.5f, -0.05f, 0.0f, 0.0f, 0.0f, 1.0f, 01.5f, 1.0f);
 	switch (state){
 	case STATE_MAIN_MENU:
 
@@ -154,7 +158,7 @@ GLvoid GameEngine::DrawText(string text, GLfloat size, GLfloat spacing, GLfloat 
 	glBindTexture(GL_TEXTURE_2D, fontTexture);
 	glEnable(GL_BLEND);
 	glMatrixMode(GL_MODELVIEW);
-	glPopMatrix();
+	glPushMatrix();
 	glTranslatef(x, y, 0.0);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	GLfloat texture_size = 1.0 / 16.0f;
@@ -185,7 +189,8 @@ GLvoid GameEngine::DrawText(string text, GLfloat size, GLfloat spacing, GLfloat 
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-	glPushMatrix();
+	glPopMatrix();
+
 }
 GLvoid GameEngine::DrawBackground(GLfloat offsetX){
 	glEnable(GL_TEXTURE_2D);

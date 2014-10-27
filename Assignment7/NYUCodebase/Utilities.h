@@ -9,7 +9,6 @@
 #include <vector>
 #include <algorithm>
 #include <fstream>
-#include <string>
 #include <iostream>
 #include <sstream>
 
@@ -30,5 +29,9 @@
 #define SPRITE_COUNT_X 16
 #define SPRITE_COUNT_Y 8
 
-#define MARGIN_X 1.5f
-#define MARGIN_Y 1.0f
+#define MARGIN_TOP 1.0f
+#define MARGIN_BOTTOM 1.2f
+#define MARGIN_LEFT 1.5f
+#define MARGIN_RIGHT 1.5f
+
+using namespace std;

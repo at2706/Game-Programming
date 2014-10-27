@@ -3,7 +3,6 @@
 #define MAX_ENEMIES 10
 #define MAX_BULLETS 15
 
-using namespace std;
 class GameEngine
 {
 public:

@@ -7,11 +7,12 @@ public:
 	UIElement();
 	~UIElement();
 
-	virtual GLvoid attach(UIElement e);
+	virtual GLvoid attach(UIElement *e);
+	virtual GLvoid draw();
 
 private:
 	UIElement *parent;
-	UIElement *children;
+	vector<UIElement> *children;
 	SheetSprite *sprite;
 
 	GLfloat x;

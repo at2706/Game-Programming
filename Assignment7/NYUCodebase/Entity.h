@@ -2,7 +2,6 @@
 #include "Utilities.h"
 #include "SheetSprite.h"
 #include "Matrix.h"
-using namespace std;
 class Entity{
 public:
 	Entity(SheetSprite *sheet, GLfloat posX = 0.0f, GLfloat posY = 0.0f, 
