@@ -6,6 +6,7 @@ GameEngine::GameEngine(){
 	gravity_x = 0.0f;
 	gravity_y = -9.8f;
 	tileSheet = loadTexture("arne_sprites.png", GL_NEAREST);
+	UISheet = loadTexture("greenSheet.png", GL_NEAREST);
 	fontTexture = loadTexture("font1.png", GL_NEAREST);
 	bgTexture = loadTexture("colored_grass.png");
 	state = STATE_MAIN_MENU;
@@ -13,7 +14,14 @@ GameEngine::GameEngine(){
 
 	sprite = new SpriteUniformed(tileSheet, 98, 16, 8);
 	hero = new Entity(sprite);
-	hero->setMovement(3.0f, 3.0f, 0.75f, 3.0f, 2.0f);
+	hero->setMovement(3.0f, 5.0f, 5.0f, 5.0f, 5.0f);
+
+	sprite = new SheetSprite(UISheet, 190.0f / 512, 94.0f / 256, 100.0f / 512, 100.0f / 256);
+	UImain = new UIElement(sprite, 0.0f,0.0f,3.0f,3.0f);
+
+	sprite = new SheetSprite(UISheet, 380.0f / 512, 36.0f / 256, 38.0f / 512, 36.0f / 256);
+	UIElement *ele = new UIElement(sprite,1.0f,1.0f);
+	UImain->attach(ele);
 
 	buildLevel();
 }
@@ -92,7 +100,7 @@ GLvoid GameEngine::Render(){
 	Entity::drawAll();
 
 	glLoadIdentity();
-	DrawText("TEXT", 0.5f, -0.05f, 0.0f, 0.0f, 0.0f, 1.0f, 01.5f, 1.0f);
+	UImain->draw();
 	switch (state){
 	case STATE_MAIN_MENU:
 
@@ -166,7 +174,7 @@ GLvoid GameEngine::DrawText(string text, GLfloat size, GLfloat spacing, GLfloat 
 	vector<GLfloat> texCoordData;
 	vector<GLfloat> colorData;
 
-	for (GLfloat i = 0, j = - ((GLfloat)text.size() / 2.0f); i < text.size(); i++, j++) {
+	for (GLfloat i = 0, j = - ((GLfloat)text.size() / 2); i < text.size(); i++, j++) {
 		GLfloat texture_x = (GLfloat)(((GLint)text[i]) % 16) / 16.0f;
 		GLfloat texture_y = (GLfloat)(((GLint)text[i]) / 16) / 16.0f;
 		colorData.insert(colorData.end(), { r, g, b, a, r, g, b, a, r, g, b, a, r, g, b, a });

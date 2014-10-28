@@ -13,18 +13,18 @@ SheetSprite::SheetSprite(GLuint texID, GLfloat u, GLfloat v, GLfloat width, GLfl
 	: textureID(texID), u(u), v(v), width(width), height(height){
 }
 
-GLvoid SheetSprite::draw(GLfloat x, GLfloat y, GLfloat facing, GLfloat scale){
-
+GLvoid SheetSprite::draw(GLfloat x, GLfloat y, GLfloat facing, GLfloat scaleX, GLfloat scaleY){
+	if (scaleY == -1.0f) scaleY = scaleX;
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, textureID);
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	glTranslatef(x, y, 0.0);
 	GLint flip = (facing > 90.0f && facing < 270.0f) ? -1 : 1;
-	GLfloat quad[] = { flip * -width * scale, height * scale / 2,
-		flip * -width * scale, -height * scale / 2,
-		flip * width * scale, -height * scale / 2,
-		flip * width * scale, height * scale / 2 };
+	GLfloat quad[] = { flip * -width * scaleX, height * scaleY / 2,
+		flip * -width * scaleX, -height * scaleY / 2,
+		flip * width * scaleX, -height * scaleY / 2,
+		flip * width * scaleX, height * scaleY / 2 };
 	glVertexPointer(2, GL_FLOAT, 0, quad);
 	glEnableClientState(GL_VERTEX_ARRAY);
 	GLfloat quadUVs[] = { u, v, u, v + height, u + width,
@@ -49,17 +49,18 @@ SpriteUniformed::SpriteUniformed(GLuint texID, GLint index, GLint SpriteCountX, 
 	height = 1.0 / (GLfloat)spriteCountY;
 }
 
-GLvoid SpriteUniformed::draw(GLfloat x, GLfloat y, GLfloat facing, GLfloat scale){
+GLvoid SpriteUniformed::draw(GLfloat x, GLfloat y, GLfloat facing, GLfloat scaleX, GLfloat scaleY){
+	if (scaleY == -1.0f) scaleY = scaleX;
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, textureID);
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	glTranslatef(x, y, 0.0);
 	GLint flip = (facing > 90.0f && facing < 270.0f) ? -1 : 1;
-	GLfloat quad[] = {	flip * -width * scale / 2, height * scale / 2,
-		flip * -width * scale / 2, -height * scale / 2,
-		flip * width * scale / 2, -height * scale / 2,
-		flip * width * scale / 2, height * scale / 2 };
+	GLfloat quad[] = {	flip * -width * scaleX / 2, height * scaleY / 2,
+		flip * -width * scaleX / 2, -height * scaleY / 2,
+		flip * width * scaleX / 2, -height * scaleY / 2,
+		flip * width * scaleX / 2, height * scaleY / 2 };
 	glVertexPointer(2, GL_FLOAT, 0, quad);
 	glEnableClientState(GL_VERTEX_ARRAY);
 
