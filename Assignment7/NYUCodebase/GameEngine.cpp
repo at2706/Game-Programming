@@ -373,19 +373,13 @@ GLboolean GameEngine::isSolidTile(unsigned char t){
 		return true;
 	default: return false;
 	}
+	return false;
 }
 
 GLvoid GameEngine::drawPlatformHorizontal(GLfloat length, GLfloat x, GLfloat y){
 	sprite = new SpriteUniformed(tileSheet, 3, 16, 8);
-	for (GLfloat i = -(length / 2); i < (length / 2); i++)
-	{
+	for (GLfloat i = -(length / 2); i < (length / 2); i++){
 		platform = new Entity(sprite, (i * sprite->width) + x, y);
 		platform->isStatic = true;
 	}
 }
-
-/*
-	vectors are relative
-
-
-*/
