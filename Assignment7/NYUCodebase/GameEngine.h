@@ -1,5 +1,6 @@
 #pragma once
 #include "Entity.h"
+#include "UIElement.h"
 #define MAX_ENEMIES 10
 #define MAX_BULLETS 15
 
@@ -57,6 +58,7 @@ private:
 	Entity *enemies[MAX_ENEMIES];
 
 	GLuint tileSheet;
+	GLuint UISheet;
 	GLuint fontTexture;
 	GLuint bgTexture;
 	GLint score;
@@ -66,4 +68,6 @@ private:
 	//Game Specific Stuff
 	SheetSprite *sprite;
 	Entity *platform;
+	UIElement *UImain;
+	UIElement *element;
 };

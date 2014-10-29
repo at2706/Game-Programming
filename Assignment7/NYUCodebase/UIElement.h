@@ -4,7 +4,7 @@
 class UIElement
 {
 public:
-	UIElement();
+	UIElement(SheetSprite *sheet, GLfloat posX = 0.0f, GLfloat posY = 0.0f, GLfloat scale_x = 1.0f, GLfloat scale_y = 1.0f);
 	~UIElement();
 
 	virtual GLvoid attach(UIElement *e);
@@ -12,12 +12,12 @@ public:
 
 private:
 	UIElement *parent;
-	vector<UIElement> *children;
+	vector<UIElement*> children;
 	SheetSprite *sprite;
 
 	GLfloat x;
 	GLfloat y;
-	GLfloat width;
-	GLfloat height;
+	GLfloat scale_x;
+	GLfloat scale_y;
+	GLboolean isVisible;
 };
-

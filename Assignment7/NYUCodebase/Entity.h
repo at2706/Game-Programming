@@ -17,8 +17,8 @@ public:
 	GLvoid setSize(GLfloat w, GLfloat h);
 	GLvoid setPos(GLfloat posX, GLfloat posY);
 	GLvoid setRotation(GLfloat degree);
-	GLvoid setMovement(GLfloat speed, GLfloat acceleration_x = 0.5f, GLfloat acceleration_y = 0.5f,
-					GLfloat friction_x = 0.8f, GLfloat friction_y = 0.8f);
+	GLvoid setMovement(GLfloat speed, GLfloat acceleration_x = 5.0f, GLfloat acceleration_y = 5.0f,
+					GLfloat friction_x = 5.0f, GLfloat friction_y = 5.0f);
 	GLvoid setAnimation(GLuint *arr);
 	GLvoid rotate(GLfloat degree);
 
@@ -49,9 +49,6 @@ public:
 	GLint gridX;
 	GLint gridY;
 
-	float scale_x;
-	float scale_y;
-
 protected:
 	friend class GameEngine;
 	vector<Entity*>::iterator id;
@@ -61,7 +58,9 @@ protected:
 	GLfloat animationElapsed;
 	GLfloat framesPerSecond;
 	GLfloat rotation;
-	GLfloat scale;
+
+	GLfloat scale_x;
+	GLfloat scale_y;
 
 	GLfloat facing;
 	GLfloat speed;
