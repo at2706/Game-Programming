@@ -17,7 +17,7 @@ GameEngine::GameEngine(){
 	hero->setMovement(3.0f, 5.0f, 5.0f, 5.0f, 5.0f);
 
 	sprite = new SheetSprite(UISheet, 190.0f / 512, 94.0f / 256, 100.0f / 512, 100.0f / 256);
-	UImain = new UIElement(sprite, 0.0f,0.0f,3.0f,3.0f);
+	UImain = new UIElement(sprite, -1.2f,0.7f,1.0f,1.0f);
 
 	sprite = new SheetSprite(UISheet, 380.0f / 512, 36.0f / 256, 38.0f / 512, 36.0f / 256);
 	UIElement *ele = new UIElement(sprite,1.0f,1.0f);
