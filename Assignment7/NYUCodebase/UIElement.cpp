@@ -1,6 +1,5 @@
 #include "UIElement.h"
 
-
 UIElement::UIElement(){
 	parent = nullptr;
 }
