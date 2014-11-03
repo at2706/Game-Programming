@@ -1,6 +1,8 @@
 #pragma once
 #include "Entity.h"
 #include "UIElement.h"
+#include "UIText.h"
+
 #define MAX_ENEMIES 10
 #define MAX_BULLETS 15
 
@@ -66,8 +68,5 @@ private:
 	Entity *hero;
 
 	//Game Specific Stuff
-	SheetSprite *sprite;
-	Entity *platform;
 	UIElement *UImain;
-	UIElement *element;
 };

@@ -29,9 +29,9 @@
 #define SPRITE_COUNT_X 16
 #define SPRITE_COUNT_Y 8
 
-#define MARGIN_TOP 1.0f
-#define MARGIN_BOTTOM 1.2f
-#define MARGIN_LEFT 1.5f
-#define MARGIN_RIGHT 1.5f
+#define MARGIN_TOP 0.1f
+#define MARGIN_BOTTOM 0.1f
+#define MARGIN_LEFT 0.1f
+#define MARGIN_RIGHT 0.1f
 
 using namespace std;

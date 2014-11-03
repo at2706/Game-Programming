@@ -80,6 +80,7 @@
     <ClCompile Include="SheetSprite.cpp" />
     <ClCompile Include="UIButton.cpp" />
     <ClCompile Include="UIElement.cpp" />
+    <ClCompile Include="UIText.cpp" />
     <ClCompile Include="Vector.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -88,6 +89,7 @@
     <ClInclude Include="Matrix.h" />
     <ClInclude Include="UIButton.h" />
     <ClInclude Include="UIElement.h" />
+    <ClInclude Include="UIText.h" />
     <ClInclude Include="Utilities.h" />
     <ClInclude Include="SheetSprite.h" />
     <ClInclude Include="Vector.h" />
