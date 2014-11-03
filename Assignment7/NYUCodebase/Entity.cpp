@@ -211,7 +211,60 @@ GLboolean Entity::collisionCheck(Entity *e){
 	//Matrix entity1Inverse = matrix.inverse();
 	//Matrix entity2Inverse = e->matrix.inverse();
 
-	Vector tl = Vector(-e->sprite->width, e->sprite->height, 0.0f);
+	vector<Vector> points;
+	points.push_back(Vector(-e->sprite->width, e->sprite->height, 0.0f));
+	points.push_back(Vector(-e->sprite->width, -e->sprite->height, 0.0f));
+	points.push_back(Vector(e->sprite->width, e->sprite->height, 0.0f));
+	points.push_back(Vector(e->sprite->width, -e->sprite->height, 0.0f));
+
+	for (int i = 0; i < 4; i++){
+		points[i] = matrix * points[i];
+		points[i].normalize();
+	}
+
+	vector<Vector> epoints;
+	epoints.push_back(Vector(-e->sprite->width, e->sprite->height, 0.0f));
+	epoints.push_back(Vector(-e->sprite->width, -e->sprite->height, 0.0f));
+	epoints.push_back(Vector(e->sprite->width, e->sprite->height, 0.0f));
+	epoints.push_back(Vector(e->sprite->width, -e->sprite->height, 0.0f));
+
+	for (int i = 0; i < 4; i++){
+		epoints[i] = e->matrix * epoints[i];
+		epoints[i].normalize();
+	}
+
+	vector<float> penetrations;
+	//Axis Loop A
+	for (int i = 0; i < 4; i++){
+		Vector axis = points[i];
+
+		//Projection Loop for A
+		vector<float> projectionsA;
+		for (int j = 0; j < 4; j++){
+			projectionsA.push_back(axis.dotProduct(points[j]));
+		}
+
+		sort(projectionsA.begin(), projectionsA.end());
+		float aMin = projectionsA.front(), aMax = projectionsA.back();
+
+		//Projection Loop for B
+		vector<float> projectionsB;
+		for (int j = 0; j < 4; j++){
+			projectionsB.push_back(axis.dotProduct(points[j]));
+		}
+
+		sort(projectionsB.begin(), projectionsB.end());
+		float bMin = projectionsB.front(), bMax = projectionsB.back();
+
+		if (aMin <= bMax || aMax >= bMin){
+			penetrations.push_back(min(aMax - bMin, bMax - aMin));
+		}
+		else return false;
+	}
+
+	//sort(penetrations.front(), penetrations.back());
+
+	/*Vector tl = Vector(-e->sprite->width, e->sprite->height, 0.0f);
 	Vector bl = Vector(-e->sprite->width, -e->sprite->height, 0.0f);
 	Vector tr = Vector(e->sprite->width, e->sprite->height, 0.0f);
 	Vector br = Vector(e->sprite->width, -e->sprite->height, 0.0f);
@@ -278,15 +331,24 @@ GLboolean Entity::collisionCheck(Entity *e){
 	float penY = fabs(y - e->y) - ((ah + bh));
 
 	if (penY < 0 && penX < 0){
-		y += penY - 0.001f;
-		velocity_y = enableBounce ? -velocity_y : 0.0f;
+		y += (penY - 0.0001f) /2;
+
+		x += (penX - 0.0001f) /2;
+
+		if (enableBounce){
+			velocity_y = -velocity_y;
+			velocity_x = -velocity_x;
+			rotate(180);
+		}
+		else{
+			velocity_x = 0.0f;
+			velocity_y = 0.0f;
+		}
+
 		msg1 = "trueY: " + to_string(penY) + " / " + to_string(e->y);
-
-		x += penX - 0.001f;
-		velocity_x = enableBounce ? -velocity_x : 0.0f;
-		msg2 = "trueX" + to_string(penX) + " / " + to_string(e->x);
+		msg2 = "trueX: " + to_string(penX) + " / " + to_string(e->x);
 	}
-
+	*/
 	/*//transform to world coordinates
 	ent2TL = e->matrix * ent2TL;
 	ent2BL = e->matrix * ent2BL;
@@ -323,6 +385,7 @@ GLboolean Entity::collisionCheck(Entity *e){
 
 	velocity_x = 0;
 	velocity_y = 0;*/
+msg1 = "TRUE";
 	return true;
 }
 

@@ -5,7 +5,7 @@ GameEngine::GameEngine(){
 	elapsed = 0;
 	gravity_x = 0.0f;
 	gravity_y = -9.8f;
-	tileSheet = loadTexture("sheet.png", GL_NEAREST);
+	//tileSheet = loadTexture("sheet.png", GL_NEAREST);
 	UISheet = loadTexture("greenSheet.png", GL_NEAREST);
 	fontTexture = loadTexture("font1.png", GL_NEAREST);
 	bgTexture = loadTexture("colored_grass.png");
@@ -41,9 +41,9 @@ GameEngine::GameEngine(){
 		enemy->rotating = true;
 		enemy->setPos(3.3f * ((float)rand() / (float)RAND_MAX) - 1.65f, 3.3f * ((float)rand() / (float)RAND_MAX) - 1.65f);
 		enemy->setMovement(1, 0.0f, 0.0f, 0.0f, 0.0f);
-		enemy->velocity_x = ((float)rand() / (float)RAND_MAX) - 0.5f;
+		/*enemy->velocity_x = ((float)rand() / (float)RAND_MAX) - 0.5f;
 		enemy->velocity_y = ((float)rand() / (float)RAND_MAX) - 0.5f;
-		enemy->velocity_r = rand() % 60 - 50;
+		enemy->velocity_r = rand() % 60 - 50;*/
 		enemy->facing = rand() & 60 + 45;
 		enemy->enableBounce = true;
 	}

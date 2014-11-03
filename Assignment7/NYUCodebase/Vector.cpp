@@ -8,10 +8,12 @@ Vector::Vector(float x, float y, float z)
 	: x(x), y(y), z(z){
 }
 
-Vector::~Vector()
-{
+Vector::~Vector(){
 }
 
+float Vector::dotProduct(Vector v2){
+	return (x * v2.x) + (y * v2.y);
+}
 
 float Vector::length(){
 	return sqrt(x*x + y*y + z*z);

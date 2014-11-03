@@ -7,6 +7,7 @@ public:
 	Vector(float x, float y, float z);
 	~Vector();
 
+	float dotProduct(Vector v2);
 	float length();
 	void normalize();
 	float x;
