@@ -43,7 +43,10 @@
       <Filter>Source Files\User Interface</Filter>
     </ClCompile>
     <ClCompile Include="UIButton.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\User Interface</Filter>
+    </ClCompile>
+    <ClCompile Include="UIText.cpp">
+      <Filter>Source Files\User Interface</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -69,7 +72,10 @@
       <Filter>Header Files\User Interface</Filter>
     </ClInclude>
     <ClInclude Include="UIButton.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\User Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="UIText.h">
+      <Filter>Header Files\User Interface</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

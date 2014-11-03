@@ -5,25 +5,48 @@ GameEngine::GameEngine(){
 	elapsed = 0;
 	gravity_x = 0.0f;
 	gravity_y = -9.8f;
-	tileSheet = loadTexture("arne_sprites.png", GL_NEAREST);
+	tileSheet = loadTexture("sheet.png", GL_NEAREST);
 	UISheet = loadTexture("greenSheet.png", GL_NEAREST);
 	fontTexture = loadTexture("font1.png", GL_NEAREST);
 	bgTexture = loadTexture("colored_grass.png");
 	state = STATE_MAIN_MENU;
 	jumpSound = Mix_LoadWAV("jump.wav");
-
-	sprite = new SpriteUniformed(tileSheet, 98, 16, 8);
+	SheetSprite *sprite;
+	sprite = new SheetSprite(tileSheet, 224.0f / 1024, 832.0f / 1024, 99.0f / 1024, 75.0f / 1024);
 	hero = new Entity(sprite);
-	hero->setMovement(3.0f, 5.0f, 5.0f, 5.0f, 5.0f);
+	hero->setMovement(1.0f, 2.0f, 2.0f, 5.0f, 5.0f);
+	hero->enableGravity = false;
+	hero->rotation = -90.0f;
 
-	sprite = new SheetSprite(UISheet, 190.0f / 512, 94.0f / 256, 100.0f / 512, 100.0f / 256);
-	UImain = new UIElement(sprite, -1.2f,0.7f,1.0f,1.0f);
+	/*sprite = new SheetSprite(UISheet, 190.0f / 512, 94.0f / 256, 100.0f / 512, 100.0f / 256);
+	UImain = new UIElement(sprite, -1.2f,0.4f,1.0f,1.0f);
 
 	sprite = new SheetSprite(UISheet, 380.0f / 512, 36.0f / 256, 38.0f / 512, 36.0f / 256);
 	UIElement *ele = new UIElement(sprite,1.0f,1.0f);
-	UImain->attach(ele);
+	UImain->attach(ele);*/
 
-	buildLevel();
+	//buildLevel();
+	SheetSprite *astroids[6];
+	astroids[0] = new SheetSprite(tileSheet, 224 / 1024.0f, 664 / 1024.0f, 101 / 1024.0f, 84 / 1024.0f);
+	astroids[1] = new SheetSprite(tileSheet, 0 / 1024.0f, 520 / 1024.0f, 120 / 1024.0f, 98 / 1024.0f);
+	astroids[2] = new SheetSprite(tileSheet, 518 / 1024.0f, 810 / 1024.0f, 89 / 1024.0f, 82 / 1024.0f);
+	astroids[3] = new SheetSprite(tileSheet, 327 / 1024.0f, 452 / 1024.0f, 98 / 1024.0f, 96 / 1024.0f);
+	astroids[4] = new SheetSprite(tileSheet, 651 / 1024.0f, 447 / 1024.0f, 43 / 1024.0f, 43 / 1024.0f);
+	astroids[5] = new SheetSprite(tileSheet, 237 / 1024.0f, 452 / 1024.0f, 45 / 1024.0f, 40 / 1024.0f);
+
+	Entity *enemy;
+	for (GLint i = 0; i < MAX_ENEMIES; i++){
+		enemy = new Entity(astroids[(int)(rand() % 6)]);
+		enemy->enableGravity = false;
+		enemy->rotating = true;
+		enemy->setPos(3.3f * ((float)rand() / (float)RAND_MAX) - 1.65f, 3.3f * ((float)rand() / (float)RAND_MAX) - 1.65f);
+		enemy->setMovement(1, 0.0f, 0.0f, 0.0f, 0.0f);
+		enemy->velocity_x = ((float)rand() / (float)RAND_MAX) - 0.5f;
+		enemy->velocity_y = ((float)rand() / (float)RAND_MAX) - 0.5f;
+		enemy->velocity_r = rand() % 60 - 50;
+		enemy->facing = rand() & 60 + 45;
+		enemy->enableBounce = true;
+	}
 }
 
 GameEngine::~GameEngine(){
@@ -42,21 +65,23 @@ GLboolean GameEngine::ProcessEvents(){
 	}
 	 //Keyboard Events
 	if (keys[SDL_SCANCODE_RIGHT]) {
-		hero->isIdle = false;
-		hero->facing = 0.0f;
+		hero->rotating = true;
+		hero->acceleration_r = -180.0f;
 	}
 	else if (keys[SDL_SCANCODE_LEFT]) {
-		hero->isIdle = false;
-		hero->facing = 180.0f;
+		hero->rotating = true;
+		hero->acceleration_r = 180.0f;
 	}
 	else{
-		hero->isIdle = true;
+		hero->rotating = false;
 	}
 
-	if (keys[SDL_SCANCODE_UP] && hero->collidedBottom){
+	if (keys[SDL_SCANCODE_UP]){
 		Mix_PlayChannel(-1, jumpSound, 0);
-		hero->velocity_y = 3.0f;
+		hero->isIdle = false;
 	}
+
+	else hero->isIdle = true;
 
 	switch (state){
 	case STATE_MAIN_MENU:
@@ -74,6 +99,7 @@ GLboolean GameEngine::ProcessEvents(){
 GLvoid GameEngine::Update(){
 	glClear(GL_COLOR_BUFFER_BIT);
 	time();
+	hero->isVisible = true;
 	switch (state){
 	case STATE_MAIN_MENU:
 		
@@ -87,20 +113,26 @@ GLvoid GameEngine::Update(){
 	}
 }
 GLvoid GameEngine::Render(){
-	DrawBackground();
-	glLoadIdentity();
+	//DrawBackground();
+	/*glLoadIdentity();
 
 	GLfloat panX = (hero->x < MARGIN_LEFT) ? -MARGIN_LEFT : -hero->x;
 	panX = (hero->x >(mapWidth * TILE_SIZE) - MARGIN_RIGHT) ? -mapWidth * TILE_SIZE + MARGIN_RIGHT : panX;
 	GLfloat panY = (hero->y > -MARGIN_TOP) ? MARGIN_TOP : -hero->y;
 	panY = (hero->y < -(mapHeight * TILE_SIZE) + MARGIN_BOTTOM) ? (mapHeight * TILE_SIZE) - MARGIN_BOTTOM : panY;
 	
-	glTranslatef(panX, panY, 0.0f);
-	drawLevel();
+	glTranslatef(panX, panY, 0.0f);*/
+	//drawLevel();
 	Entity::drawAll();
 
 	glLoadIdentity();
-	UImain->draw();
+	//UImain->draw();
+
+	DrawText(hero->msg1, 0.1f, 0.0f, 0.0f, 0.9f, 1.0f, 1.0f, 1.0f, 1.0f);
+	DrawText(hero->msg2, 0.1f, 0.0f, 0.0f, -0.8f, 1.0f, 1.0f, 1.0f, 1.0f);
+	DrawText(to_string(hero->velocity_x), 0.1f, 0.0f, -1.0f, -0.9f, 1.0f, 1.0f, 1.0f, 1.0f);
+	DrawText(to_string(hero->velocity_y), 0.1f, 0.0f, 1.0f, -0.9f, 1.0f, 1.0f, 1.0f, 1.0f);
+
 	switch (state){
 	case STATE_MAIN_MENU:
 
@@ -359,7 +391,7 @@ GLboolean GameEngine::readEntityData(ifstream &stream){
 }
 
 GLvoid GameEngine::placeEntity(string &type, GLfloat x, GLfloat y){
-	if (type == "Start"){
+	if (type == "start"){
 		hero->x = x;
 		hero->y = y;
 	}
@@ -385,6 +417,8 @@ GLboolean GameEngine::isSolidTile(unsigned char t){
 }
 
 GLvoid GameEngine::drawPlatformHorizontal(GLfloat length, GLfloat x, GLfloat y){
+	SheetSprite *sprite;
+	Entity *platform;
 	sprite = new SpriteUniformed(tileSheet, 3, 16, 8);
 	for (GLfloat i = -(length / 2); i < (length / 2); i++){
 		platform = new Entity(sprite, (i * sprite->width) + x, y);

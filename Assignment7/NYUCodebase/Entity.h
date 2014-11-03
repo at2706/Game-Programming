@@ -14,10 +14,10 @@ public:
 	GLvoid buildMatrix();
 	GLvoid worldToTileCoordinates(GLfloat worldX, GLfloat worldY, GLint *gridX, GLint *gridY);
 
-	GLvoid setSize(GLfloat w, GLfloat h);
+	GLvoid setScale(GLfloat x, GLfloat y);
 	GLvoid setPos(GLfloat posX, GLfloat posY);
-	GLvoid setRotation(GLfloat degree);
-	GLvoid setMovement(GLfloat speed, GLfloat acceleration_x = 5.0f, GLfloat acceleration_y = 5.0f,
+	GLvoid setFacing(GLfloat degree, GLfloat f = 10.0f);
+	GLvoid setMovement(GLfloat speed, GLfloat acceleration_x = 5.0f, GLfloat acceleration_y = 5.0f, 
 					GLfloat friction_x = 5.0f, GLfloat friction_y = 5.0f);
 	GLvoid setAnimation(GLuint *arr);
 	GLvoid rotate(GLfloat degree);
@@ -28,15 +28,21 @@ public:
 	GLvoid decelerateX();
 	GLvoid decelerateY();
 
+	GLvoid moveR();
+	GLvoid decelerateR();
+
 	GLboolean collidesWith(Entity *e);
 	GLboolean collidesWith(GLfloat posX, GLfloat posY);
 	GLboolean collidesWith(GLint tileX, GLint tileY);
+	GLboolean collisionCheck(Entity *e);
 
 	GLvoid collisionPenX();
 	GLvoid collisionPenY();
 
 	GLvoid tileCollisionY(GameEngine *g);
 	GLvoid tileCollisionX(GameEngine *g);
+
+	GLvoid collisionAxis();
 
 	static vector<Entity*> entities;
 	static GLvoid drawAll();
@@ -48,6 +54,9 @@ public:
 	GLfloat y;
 	GLint gridX;
 	GLint gridY;
+
+	string msg1;
+	string msg2;
 
 protected:
 	friend class GameEngine;
@@ -72,10 +81,16 @@ protected:
 	GLfloat acceleration_y;
 	GLfloat friction_x;
 	GLfloat friction_y;
+
+	GLfloat velocity_r;
+	GLfloat acceleration_r;
+	GLfloat friction_r;
+
 	GLfloat mass;
 	GLboolean isStatic;
 	GLboolean isIdle;
-	GLboolean isVisable;
+	GLboolean isVisible;
+	GLboolean rotating;
 
 	GLboolean enableGravity;
 	GLboolean enableBounce;
@@ -86,4 +101,3 @@ protected:
 	GLboolean collidedLeft;
 	GLboolean collidedRight;
 };
-

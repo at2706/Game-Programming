@@ -2,13 +2,13 @@
 
 int main(int argc, char *argv[])
 {
-	GameEngine SpaceInvaders;
+	GameEngine game;
 	
-	while (SpaceInvaders.ProcessEvents()) {
+	while (game.ProcessEvents()) {
 		
-		SpaceInvaders.Update();
+		game.Update();
 
-		SpaceInvaders.Render();
+		game.Render();
 	}
 
 	return 0;

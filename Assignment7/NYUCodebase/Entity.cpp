@@ -8,11 +8,15 @@ Entity::Entity(SheetSprite *sheet, GLfloat posX, GLfloat posY,
 	sprite = sheet;
 	setPos(posX, posY);
 	setMovement(speed);
+	setFacing(0.0);
+
+	matrix = Matrix();
 
 	velocity_x = 0;
+	velocity_r = 0;
 	isStatic = false;
 	isIdle = true;
-	isVisable = true;
+	isVisible = true;
 
 	enableGravity = true;
 	enableBounce = false;
@@ -29,10 +33,16 @@ Entity::Entity(SheetSprite *sheet, GLfloat posX, GLfloat posY,
 
 Entity::~Entity(){ entities.erase(id); }
 GLvoid Entity::draw(){
-	//sprite->index = animationIndex;
-	if (isVisable)
+	if (isVisible){
+		buildMatrix();
+		glMatrixMode(GL_MODELVIEW);
+		glPushMatrix();
+		glMultMatrixf(matrix.ml);
+
 		sprite->draw(x, y, facing, scale_x, scale_y);
 
+		glPopMatrix();
+	}
 }
 GLvoid Entity::drawAll(){
 	for (vector<Entity*>::iterator it = entities.begin(); it != entities.end(); ++it)
@@ -42,8 +52,15 @@ GLfloat Entity::lerp(GLfloat v0, GLfloat v1, GLfloat t) {
 	return (1.0f - t)*v0 + t*v1;
 }
 GLvoid Entity::worldToTileCoordinates(float worldX, float worldY, int *gridX, int *gridY) {
-	*gridX = (int)((worldX) / TILE_SIZE);
-	*gridY = (int)((-worldY) / TILE_SIZE);
+	*gridX = (int)((worldX) / TILE_SIZE) + sprite->width;
+	*gridY = (int)((-worldY) / TILE_SIZE) + sprite->height;
+}
+GLvoid setEdgeVectors(Vector tl, Vector bl, Vector tr, Vector br,
+					Vector &top, Vector &right, Vector &left, Vector &bot){
+	top = Vector(tr.x - tl.x, tr.y - tl.y, 0.0);
+	bot = Vector(br.x - bl.x, br.y - bl.y, 0.0);
+	right = Vector(tr.x - br.x, tr.y - br.y, 0.0);
+	left = Vector(tl.x - bl.x, tl.y - bl.y, 0.0);
 }
 
 GLvoid Entity::fixedUpdate(GameEngine *g){
@@ -51,28 +68,45 @@ GLvoid Entity::fixedUpdate(GameEngine *g){
 	collidedBottom = false;
 	collidedLeft = false;
 	collidedRight = false;
+	msg1 = "false";
+	msg2 = "false";
 	if (!isStatic){
+
+		if (rotating) moveR();
+		else decelerateR();
+
 		if (!isIdle){
 			moveY();
-			collisionPenY();
-			tileCollisionY(g);
+			//collisionPenY();
+			//tileCollisionY(g);
+			collisionAxis();
 			moveX();
-			collisionPenX();
-			tileCollisionX(g);
+			//collisionPenX();
+			//tileCollisionX(g);
+			collisionAxis();
 		}
 		else{
 			decelerateY();
-			tileCollisionY(g);
-			collisionPenY();
+			//collisionPenY();
+			//tileCollisionY(g);
+			collisionAxis();
 			decelerateX();
-			collisionPenX();
-			tileCollisionX(g);
+			//collisionPenX();
+			//tileCollisionX(g);
+			collisionAxis();
 		}
-
 		if (enableGravity && !collidedBottom){
 			velocity_x += g->gravity_x * FIXED_TIMESTEP;
 			velocity_y += g->gravity_y * FIXED_TIMESTEP;
 		}
+
+		//Screen Wrap
+		if (x > ASPECT_RATIO_X + 0.1f) x = -ASPECT_RATIO_X - 0.05f;
+		else if (x < -ASPECT_RATIO_X - 0.1f) x = ASPECT_RATIO_X + 0.05f;
+
+		if (y > ASPECT_RATIO_Y + 0.1f) y = -ASPECT_RATIO_Y - 0.05f;
+		else if (y < -ASPECT_RATIO_Y - 0.1f) y = ASPECT_RATIO_Y + 0.05f;
+
 	}
 }
 GLvoid Entity::fixedUpdateAll(GameEngine *g){
@@ -80,6 +114,10 @@ GLvoid Entity::fixedUpdateAll(GameEngine *g){
 		(*it)->fixedUpdate(g);
 }
 
+GLvoid Entity::setScale(GLfloat x, GLfloat y){
+	scale_x = x;
+	scale_y = y;
+}
 GLvoid Entity::setPos(GLfloat posX, GLfloat posY){
 	x = posX;
 	y = posY;
@@ -91,32 +129,34 @@ GLvoid Entity::setMovement(GLfloat s, GLfloat accelX, GLfloat accelY, GLfloat Fr
 	friction_x = FricX;
 	friction_y = FricY;
 }
-GLvoid Entity::setRotation(GLfloat degree){
-	rotation = degree;
+GLvoid Entity::setFacing(GLfloat degree, GLfloat f){
+	facing = degree;
+	friction_r = f;
 }
 GLvoid Entity::setAnimation(GLuint *arr){
 	animationFrames = arr;
 }
 
 GLvoid Entity::rotate(GLfloat degree){
-	rotation += degree;
-	if (rotation > 360.0f)	rotation -= 360.0f;
-	else if (rotation < -360.0f) rotation += 360.0f;
+	facing += degree;
+	if (facing > 360.0f)	facing -= 360.0f;
+	else if (facing < -360.0f) facing += 360.0f;
 }
 GLvoid Entity::moveX(){
 	GLfloat radian = (facing * PI) / 180.0f;
-
 	velocity_x += acceleration_x * FIXED_TIMESTEP * cos(radian);
 
-	if (velocity_x > speed) velocity_x = speed;
-	else if (velocity_x < -speed) velocity_x = -speed;
-
+	/*if (velocity_x > speed) velocity_x = speed;
+	else if (velocity_x < -speed) velocity_x = -speed;*/
 	x += velocity_x * FIXED_TIMESTEP;
 
 }
 GLvoid Entity::moveY(){
 	GLfloat radian = (facing * PI) / 180.0f;
 	velocity_y += acceleration_y * FIXED_TIMESTEP * sin(radian);
+
+	/*if (velocity_y > speed) velocity_y = speed;
+	else if (velocity_y < -speed) velocity_y = -speed;*/
 	y += velocity_y * FIXED_TIMESTEP;
 }
 GLvoid Entity::decelerateX(){
@@ -124,9 +164,19 @@ GLvoid Entity::decelerateX(){
 	x += velocity_x * FIXED_TIMESTEP;
 }
 GLvoid Entity::decelerateY(){
-	//velocity_y = lerp(velocity_y, 0.0f, FIXED_TIMESTEP * friction_y);
+	velocity_y = lerp(velocity_y, 0.0f, FIXED_TIMESTEP * friction_y);
 	y += velocity_y * FIXED_TIMESTEP;
 }
+
+GLvoid Entity::moveR(){
+	velocity_r += acceleration_r * FIXED_TIMESTEP;
+	rotate(velocity_r * FIXED_TIMESTEP);
+}
+GLvoid Entity::decelerateR(){
+	velocity_r = lerp(velocity_r, 0.0f, FIXED_TIMESTEP * friction_r);
+	rotate(velocity_r * FIXED_TIMESTEP);
+}
+
 //Box-box Collision
 GLboolean Entity::collidesWith(Entity *e){
 	if (!enableCollisions || !e->enableCollisions) return false;
@@ -152,6 +202,130 @@ GLboolean Entity::collidesWith(GLfloat posX, GLfloat posY){
 
 	return !((posX > left && posX < right) || (posY > bot && posY < top));
 }
+//Non-axis aligned bounding boxes
+GLboolean Entity::collisionCheck(Entity *e){
+	if (!enableCollisions || !e->enableCollisions) return false;
+	buildMatrix();
+	e->buildMatrix();
+
+	//Matrix entity1Inverse = matrix.inverse();
+	//Matrix entity2Inverse = e->matrix.inverse();
+
+	Vector tl = Vector(-e->sprite->width, e->sprite->height, 0.0f);
+	Vector bl = Vector(-e->sprite->width, -e->sprite->height, 0.0f);
+	Vector tr = Vector(e->sprite->width, e->sprite->height, 0.0f);
+	Vector br = Vector(e->sprite->width, -e->sprite->height, 0.0f);
+
+	Vector top, right, left, bot;
+	setEdgeVectors(tl, bl, tr, br, top, right, left, bot);
+
+	top.normalize();
+	right.normalize();
+	left.normalize();
+	bot.normalize();
+
+	Vector ent2TL = Vector(-e->sprite->width, e->sprite->height, 0.0f);
+	Vector ent2BL = Vector(-e->sprite->width, -e->sprite->height, 0.0f);
+	Vector ent2TR = Vector(e->sprite->width, e->sprite->height, 0.0f);
+	Vector ent2BR = Vector(e->sprite->width, -e->sprite->height, 0.0f);
+
+	Vector e2top, e2right, e2left, e2bottom;
+	setEdgeVectors(ent2TL, ent2BL, ent2TR, ent2BR, e2top, e2right, e2left, e2bottom);
+
+	e2top.normalize();
+	e2right.normalize();
+	e2left.normalize();
+	e2bottom.normalize();
+
+	Vector axis = right;
+
+	float BRProjected = axis * br;
+	float TRProjected = axis * tr;
+
+	float minX = min(BRProjected, TRProjected);
+	float maxX = min(BRProjected, TRProjected);
+	float aw = maxX - minX;
+	
+	float ent2TLprojected = axis * ent2TL;
+	float ent2BLprojected = axis * ent2BL;
+	float ent2TRprojected = axis * ent2TR;
+	float ent2BRprojected = axis * ent2TR;
+
+	minX = min(min(min(ent2TLprojected, ent2BLprojected), ent2TRprojected), ent2BRprojected);
+	maxX = max(max(max(ent2TLprojected, ent2BLprojected), ent2TRprojected), ent2BRprojected);
+	float bw = maxX - minX;
+
+	float penX = fabs(x - e->x) - ((aw + bw));
+
+	axis = bot;
+
+	float BLProjected = axis * bl;
+	BRProjected = axis * br;
+
+	float minY = min(BLProjected, BRProjected);
+	float maxY = min(BLProjected, BRProjected);
+	float ah = maxY - minY;
+
+	ent2TLprojected = axis * ent2TL;
+	ent2BLprojected = axis * ent2BL;
+	ent2TRprojected = axis * ent2TR;
+	ent2BRprojected = axis * ent2TR;
+
+	minY = min(min(min(ent2TLprojected, ent2BLprojected), ent2TRprojected), ent2BRprojected);
+	maxY = max(max(max(ent2TLprojected, ent2BLprojected), ent2TRprojected), ent2BRprojected);
+	float bh = maxY - minY;
+	
+	float penY = fabs(y - e->y) - ((ah + bh));
+
+	if (penY < 0 && penX < 0){
+		y += penY - 0.001f;
+		velocity_y = enableBounce ? -velocity_y : 0.0f;
+		msg1 = "trueY: " + to_string(penY) + " / " + to_string(e->y);
+
+		x += penX - 0.001f;
+		velocity_x = enableBounce ? -velocity_x : 0.0f;
+		msg2 = "trueX" + to_string(penX) + " / " + to_string(e->x);
+	}
+
+	/*//transform to world coordinates
+	ent2TL = e->matrix * ent2TL;
+	ent2BL = e->matrix * ent2BL;
+	ent2TR = e->matrix * ent2TR;
+	ent2BR = e->matrix * ent2BR;
+
+	ent2TL = entity1Inverse * ent2TL;
+	ent2BL = entity1Inverse * ent2BL;
+	ent2TR = entity1Inverse * ent2TR;
+	ent2BR = entity1Inverse * ent2BR;
+
+	//check x axis
+	float minX = min(min(min(ent2TL.x, ent2BL.x), ent2TR.x), ent2BR.x);
+	float maxX = max(max(max(ent2TL.x, ent2BL.x), ent2TR.x), ent2BR.x);
+
+	if (!(minX <= sprite->width && maxX >= -sprite->width)){
+		return false;
+	}
+
+	//check y axis
+	float minY = min(min(min(ent2TL.y, ent2BL.y), ent2TR.y), ent2BR.y);
+	float maxY = max(max(max(ent2TL.y, ent2BL.y), ent2TR.y), ent2BR.y);
+
+	if (!(minY <= sprite->height && maxY >= -sprite->height)){
+		return false;
+	}
+	GLfloat radian = (facing * PI) / 180.0f;
+
+	float penY = min(maxY - sprite->height, sprite->height - maxY) * -sin(radian) + 0.0001f;
+	y += penY;
+
+	float penX = min(maxX - sprite->width, sprite->width - maxX) * -cos(radian) + 0.0001f;
+	x += penX;
+
+	velocity_x = 0;
+	velocity_y = 0;*/
+	return true;
+}
+
 GLvoid Entity::collisionPenY(){
 	vector<Entity*>::iterator end = entities.end();
 	for (vector<Entity*>::iterator it2 = entities.begin(); it2 != end; ++it2){
@@ -231,7 +405,6 @@ GLvoid Entity::tileCollisionY(GameEngine *g){
 		velocity_y = 0.0f;
 	}
 }
-
 GLvoid Entity::tileCollisionX(GameEngine *g){
 	GLint *gridXptr = &gridX, *gridYptr = &gridY;
 	worldToTileCoordinates(x, y, gridXptr, gridYptr);
@@ -264,19 +437,30 @@ GLvoid Entity::tileCollisionX(GameEngine *g){
 	}
 }
 
-/*GLvoid Entity:: buildMatrix(){
-	
-	scale * rotate * translatioin
+GLvoid Entity::collisionAxis(){
+	vector<Entity*>::iterator end = entities.end();
+	for (vector<Entity*>::iterator it2 = entities.begin(); it2 != end; ++it2){
+		if (this != (*it2) && collisionCheck((*it2))){
+			
+		}
+	}
 }
 
-corners are vectors
-ent2TL = Vector(-entity2->width / 2, entity2->height /2, 0.0f);
-ent2TL = entity2->matrix * ent2TL;
-ent2TL entity1Inverse * ent2TL;
+GLvoid Entity::buildMatrix(){
+	Matrix scaleMatrix;
+	scaleMatrix.m[0][0] = scale_x;
+	scaleMatrix.m[1][1] = scale_y;
 
-std::min of all corners
+	Matrix translateMatrix;
+	translateMatrix.m[3][0] = x;
+	translateMatrix.m[3][1] = y;
 
-if(!(minX <= entity1-> width/2 && maxX >= entity1->width/2)){ return false; }
+	GLfloat radian = ((rotation + facing) * PI) / 180.0f; //Rotates with Facing
+	Matrix rotationMatrix;
+	rotationMatrix.m[0][0] = cos(radian);
+	rotationMatrix.m[1][0] = -sin(radian);
+	rotationMatrix.m[0][1] = sin(radian);
+	rotationMatrix.m[1][1] = cos(radian);
 
-
-*/
+	matrix = scaleMatrix * rotationMatrix * translateMatrix;
+}

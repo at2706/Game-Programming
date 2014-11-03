@@ -1,6 +1,7 @@
 #pragma once
 #include "Utilities.h"
 #include "SheetSprite.h"
+
 class UIElement
 {
 public:
@@ -10,7 +11,7 @@ public:
 	virtual GLvoid attach(UIElement *e);
 	virtual GLvoid draw();
 
-private:
+protected:
 	UIElement *parent;
 	vector<UIElement*> children;
 	SheetSprite *sprite;

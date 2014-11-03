@@ -1,5 +1,6 @@
 #pragma once
 #include "Utilities.h"
+#include "Matrix.h"
 
 class SheetSprite
 {
@@ -25,7 +26,7 @@ private:
 class SpriteUniformed : public SheetSprite{
 public:
 	SpriteUniformed(GLuint textureID, GLint index, GLint SpriteCountX, GLint SpriteCountY);
-	GLvoid draw(GLfloat x, GLfloat y, GLfloat facing, GLfloat scaleX, GLfloat scaleY = -1.0f);
+	GLvoid draw(GLfloat x, GLfloat y, GLfloat facing, GLfloat scaleX, GLfloat scaleY);
 
 private:
 	GLint index;
