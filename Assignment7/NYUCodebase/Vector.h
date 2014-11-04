@@ -13,6 +13,4 @@ public:
 	float x;
 	float y;
 	float z;
-
-	float operator * (const Vector &v2);
 };

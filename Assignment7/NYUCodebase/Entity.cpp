@@ -149,8 +149,8 @@ GLvoid Entity::moveX(){
 	GLfloat radian = (facing * PI) / 180.0f;
 	velocity_x += acceleration_x * FIXED_TIMESTEP * cos(radian);
 
-	/*if (velocity_x > speed) velocity_x = speed;
-	else if (velocity_x < -speed) velocity_x = -speed;*/
+	if (velocity_x > speed * cos(radian)) velocity_x = speed * cos(radian);
+	else if (velocity_x < -speed * fabs(cos(radian))) velocity_x = -speed * fabs(cos(radian));
 	x += velocity_x * FIXED_TIMESTEP;
 
 }
@@ -158,8 +158,8 @@ GLvoid Entity::moveY(){
 	GLfloat radian = (facing * PI) / 180.0f;
 	velocity_y += acceleration_y * FIXED_TIMESTEP * sin(radian);
 
-	/*if (velocity_y > speed) velocity_y = speed;
-	else if (velocity_y < -speed) velocity_y = -speed;*/
+	if (velocity_y > speed * sin(radian)) velocity_y = speed * sin(radian);
+	else if (velocity_y < -speed * fabs(sin(radian))) velocity_y = -speed * fabs(sin(radian));
 	y += velocity_y * FIXED_TIMESTEP;
 }
 GLvoid Entity::decelerateX(){
@@ -215,6 +215,9 @@ GLboolean Entity::collisionCheck(Entity *e){
 	//Matrix entity2Inverse = e->matrix.inverse();
 
 	vector<Vector> points;
+	vector<Vector> epoints;
+	vector<Vector> edges;
+
 	points.push_back(Vector(-e->sprite->width / 2, e->sprite->height / 2, 0.0f));
 	points.push_back(Vector(-e->sprite->width / 2, -e->sprite->height / 2, 0.0f));
 	points.push_back(Vector(e->sprite->width / 2, e->sprite->height / 2, 0.0f));
@@ -224,13 +227,13 @@ GLboolean Entity::collisionCheck(Entity *e){
 		points[i] = matrix * points[i];
 	}
 
-	vector<Vector> edges;
 	for (int i = 0; i < points.size(); i++){
-		if (i == points.size() - 1) edges.push_back(getEdgeVector(points[0], points[i]));
-		else edges.push_back(getEdgeVector(points[i+1], points[i]));
+		if (i == points.size() - 1)
+			edges.push_back(getEdgeVector(points[0], points[i]));
+		else
+			edges.push_back(getEdgeVector(points[i+1], points[i]));
 	}
 
-	vector<Vector> epoints;
 	epoints.push_back(Vector(-e->sprite->width / 2, e->sprite->height / 2, 0.0f));
 	epoints.push_back(Vector(-e->sprite->width / 2, -e->sprite->height / 2, 0.0f));
 	epoints.push_back(Vector(e->sprite->width / 2, e->sprite->height / 2, 0.0f));
@@ -238,12 +241,13 @@ GLboolean Entity::collisionCheck(Entity *e){
 
 	for (int i = 0; i < 4; i++){
 		epoints[i] = e->matrix * epoints[i];
-		epoints[i].normalize();
 	}
 
 	for (int i = 0; i < epoints.size(); i++){
-		if (i == points.size() - 1) edges.push_back(getEdgeVector(epoints[0], epoints[i]));
-		else edges.push_back(getEdgeVector(epoints[i + 1], epoints[i]));
+		if (i == points.size() - 1)
+			edges.push_back(getEdgeVector(epoints[0], epoints[i]));
+		else
+			edges.push_back(getEdgeVector(epoints[i + 1], epoints[i]));
 	}
 
 	vector<float> penetrations;

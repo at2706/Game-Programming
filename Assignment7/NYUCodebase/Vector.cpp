@@ -24,7 +24,3 @@ void Vector::normalize(){
 	y /= length();
 	z /= length();
 }
-
-float Vector::operator*(const Vector &v2){
-	return (x * v2.x) + (y * v2.y);
-}
