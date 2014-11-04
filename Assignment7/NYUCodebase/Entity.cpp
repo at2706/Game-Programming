@@ -65,6 +65,10 @@ GLvoid Entity::worldToTileCoordinates(float worldX, float worldY, int *gridX, in
 Vector getEdgeVector(Vector v1, Vector v2){
 	return Vector(v2.x - v1.x, v2.y - v1.y, v2.z - v1.z);
 }
+bool lengthSortor(const Vector &v1, Vector &v2){
+	return v1.length() < v2.length();
+}
+
 
 GLvoid Entity::fixedUpdate(GameEngine *g){
 	collidedTop = false;
@@ -250,7 +254,7 @@ GLboolean Entity::collisionCheck(Entity *e){
 			edges.push_back(getEdgeVector(epoints[i + 1], epoints[i]));
 	}
 
-	vector<float> penetrations;
+	vector<Vector> penetrations;
 	//Axis Loop A
 	for (int i = 0; i < edges.size(); i++){
 		edges[i].normalize();
@@ -268,20 +272,24 @@ GLboolean Entity::collisionCheck(Entity *e){
 		//Projection Loop for B
 		vector<float> projectionsB;
 		for (int j = 0; j < 4; j++){
-			projectionsB.push_back(axis.dotProduct(points[j]));
+			projectionsB.push_back(axis.dotProduct(epoints[j]));
 		}
 
 		sort(projectionsB.begin(), projectionsB.end());
 		float bMin = projectionsB.front(), bMax = projectionsB.back();
 
-		if (aMin <= bMax || aMax >= bMin){
-			penetrations.push_back(min(aMax - bMin, bMax - aMin));
+		if (aMin <= bMax && aMax >= bMin){
+			float pen = min(aMax - bMin, bMax - aMin);
+			penetrations.push_back(Vector(axis.x * pen, axis.y * pen, 0.0f));
 		}
 		else
 			return false;
 	}
 
-	//sort(penetrations.front(), penetrations.back());
+	sort(penetrations.begin(), penetrations.end(), lengthSortor);
+
+	x += penetrations[0].x;
+	y += penetrations[0].y;
 
 	/*
 	get all corners for A

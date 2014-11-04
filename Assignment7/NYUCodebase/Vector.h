@@ -8,7 +8,7 @@ public:
 	~Vector();
 
 	float dotProduct(Vector v2);
-	float length();
+	float length() const;
 	void normalize();
 	float x;
 	float y;

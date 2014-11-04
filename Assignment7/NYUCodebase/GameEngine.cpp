@@ -14,7 +14,7 @@ GameEngine::GameEngine(){
 	SheetSprite *sprite;
 	sprite = new SheetSprite(tileSheet, 224.0f / 1024, 832.0f / 1024, 99.0f / 1024, 75.0f / 1024);
 	hero = new Entity(sprite);
-	hero->setMovement(2.5f, 0.5f, 0.5f, 5.0f, 5.0f);
+	hero->setMovement(1.0f, 0.5f, 0.5f, 5.0f, 5.0f);
 	hero->enableGravity = false;
 	hero->rotation = -90.0f;
 
@@ -45,6 +45,8 @@ GameEngine::GameEngine(){
 		enemy->velocity_y = ((float)rand() / (float)RAND_MAX) - 0.5f;*/
 		enemy->velocity_r = rand() % 60 - 50;
 		enemy->facing = rand() & 60 + 45;
+		enemy->scale_x = 2.5f;
+		enemy->scale_y = 2.5f;
 		enemy->enableBounce = true;
 	}
 }

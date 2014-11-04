@@ -15,7 +15,7 @@ float Vector::dotProduct(Vector v2){
 	return (x * v2.x) + (y * v2.y);
 }
 
-float Vector::length(){
+float Vector::length() const{
 	return sqrt(x*x + y*y + z*z);
 }
 
