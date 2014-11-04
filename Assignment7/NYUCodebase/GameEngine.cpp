@@ -5,7 +5,7 @@ GameEngine::GameEngine(){
 	elapsed = 0;
 	gravity_x = 0.0f;
 	gravity_y = -9.8f;
-	//tileSheet = loadTexture("sheet.png", GL_NEAREST);
+	tileSheet = loadTexture("sheet.png", GL_NEAREST);
 	UISheet = loadTexture("greenSheet.png", GL_NEAREST);
 	fontTexture = loadTexture("font1.png", GL_NEAREST);
 	bgTexture = loadTexture("colored_grass.png");

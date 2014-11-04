@@ -55,12 +55,15 @@ GLvoid Entity::worldToTileCoordinates(float worldX, float worldY, int *gridX, in
 	*gridX = (int)((worldX) / TILE_SIZE) + sprite->width;
 	*gridY = (int)((-worldY) / TILE_SIZE) + sprite->height;
 }
-GLvoid setEdgeVectors(Vector tl, Vector bl, Vector tr, Vector br,
-					Vector &top, Vector &right, Vector &left, Vector &bot){
-	top = Vector(tr.x - tl.x, tr.y - tl.y, 0.0);
-	bot = Vector(br.x - bl.x, br.y - bl.y, 0.0);
-	right = Vector(tr.x - br.x, tr.y - br.y, 0.0);
-	left = Vector(tl.x - bl.x, tl.y - bl.y, 0.0);
+//GLvoid setEdgeVectors(vector<Vector> &points, vector<Vector> &edges){
+//	top = Vector(tr.x - tl.x, tr.y - tl.y, 0.0);
+//	bot = Vector(br.x - bl.x, br.y - bl.y, 0.0);
+//	right = Vector(tr.x - br.x, tr.y - br.y, 0.0);
+//	left = Vector(tl.x - bl.x, tl.y - bl.y, 0.0);
+//}
+
+Vector getEdgeVector(Vector v1, Vector v2){
+	return Vector(v2.x - v1.x, v2.y - v1.y, v2.z - v1.z);
 }
 
 GLvoid Entity::fixedUpdate(GameEngine *g){
@@ -212,31 +215,42 @@ GLboolean Entity::collisionCheck(Entity *e){
 	//Matrix entity2Inverse = e->matrix.inverse();
 
 	vector<Vector> points;
-	points.push_back(Vector(-e->sprite->width, e->sprite->height, 0.0f));
-	points.push_back(Vector(-e->sprite->width, -e->sprite->height, 0.0f));
-	points.push_back(Vector(e->sprite->width, e->sprite->height, 0.0f));
-	points.push_back(Vector(e->sprite->width, -e->sprite->height, 0.0f));
+	points.push_back(Vector(-e->sprite->width / 2, e->sprite->height / 2, 0.0f));
+	points.push_back(Vector(-e->sprite->width / 2, -e->sprite->height / 2, 0.0f));
+	points.push_back(Vector(e->sprite->width / 2, e->sprite->height / 2, 0.0f));
+	points.push_back(Vector(e->sprite->width / 2, -e->sprite->height / 2, 0.0f));
 
 	for (int i = 0; i < 4; i++){
 		points[i] = matrix * points[i];
-		points[i].normalize();
+	}
+
+	vector<Vector> edges;
+	for (int i = 0; i < points.size(); i++){
+		if (i == points.size() - 1) edges.push_back(getEdgeVector(points[0], points[i]));
+		else edges.push_back(getEdgeVector(points[i+1], points[i]));
 	}
 
 	vector<Vector> epoints;
-	epoints.push_back(Vector(-e->sprite->width, e->sprite->height, 0.0f));
-	epoints.push_back(Vector(-e->sprite->width, -e->sprite->height, 0.0f));
-	epoints.push_back(Vector(e->sprite->width, e->sprite->height, 0.0f));
-	epoints.push_back(Vector(e->sprite->width, -e->sprite->height, 0.0f));
+	epoints.push_back(Vector(-e->sprite->width / 2, e->sprite->height / 2, 0.0f));
+	epoints.push_back(Vector(-e->sprite->width / 2, -e->sprite->height / 2, 0.0f));
+	epoints.push_back(Vector(e->sprite->width / 2, e->sprite->height / 2, 0.0f));
+	epoints.push_back(Vector(e->sprite->width / 2, -e->sprite->height / 2, 0.0f));
 
 	for (int i = 0; i < 4; i++){
 		epoints[i] = e->matrix * epoints[i];
 		epoints[i].normalize();
 	}
 
+	for (int i = 0; i < epoints.size(); i++){
+		if (i == points.size() - 1) edges.push_back(getEdgeVector(epoints[0], epoints[i]));
+		else edges.push_back(getEdgeVector(epoints[i + 1], epoints[i]));
+	}
+
 	vector<float> penetrations;
 	//Axis Loop A
-	for (int i = 0; i < 4; i++){
-		Vector axis = points[i];
+	for (int i = 0; i < edges.size(); i++){
+		edges[i].normalize();
+		Vector axis = edges[i];
 
 		//Projection Loop for A
 		vector<float> projectionsA;
@@ -259,10 +273,30 @@ GLboolean Entity::collisionCheck(Entity *e){
 		if (aMin <= bMax || aMax >= bMin){
 			penetrations.push_back(min(aMax - bMin, bMax - aMin));
 		}
-		else return false;
+		else
+			return false;
 	}
 
 	//sort(penetrations.front(), penetrations.back());
+
+	/*
+	get all corners for A
+	get edges and normalize
+
+	vector of penetrations here;
+	Loop through axes{
+		project all of both corners on to the current axis
+		find the min and max of both shapes
+
+		if they are colliding,
+			then calculate the pentration,
+			multiply it back with the edge,
+			and store it in the vector
+		else it's not colliding, then return false and stop the function;
+	}
+	find the smallest penetration in the vector
+	move x and y with that vector
+	*/
 
 	/*Vector tl = Vector(-e->sprite->width, e->sprite->height, 0.0f);
 	Vector bl = Vector(-e->sprite->width, -e->sprite->height, 0.0f);
@@ -385,7 +419,7 @@ GLboolean Entity::collisionCheck(Entity *e){
 
 	velocity_x = 0;
 	velocity_y = 0;*/
-msg1 = "TRUE";
+	msg1 = "TRUE";
 	return true;
 }
 

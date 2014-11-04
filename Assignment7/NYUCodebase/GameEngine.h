@@ -3,7 +3,7 @@
 #include "UIElement.h"
 #include "UIText.h"
 
-#define MAX_ENEMIES 10
+#define MAX_ENEMIES 1
 #define MAX_BULLETS 15
 
 class GameEngine

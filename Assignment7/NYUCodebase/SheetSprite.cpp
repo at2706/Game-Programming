@@ -15,10 +15,10 @@ SheetSprite::SheetSprite(GLuint texID, GLfloat u, GLfloat v, GLfloat width, GLfl
 GLvoid SheetSprite::draw(GLfloat x, GLfloat y, GLfloat facing, GLfloat scaleX, GLfloat scaleY){
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, textureID);
-	GLfloat quad[] = {-width, height,
-		-width, -height,
-		width, -height,
-		width, height };
+	GLfloat quad[] = {-width / 2, height / 2,
+		-width / 2, -height / 2,
+		width / 2, -height / 2,
+		width / 2, height / 2 };
 	glVertexPointer(2, GL_FLOAT, 0, quad);
 	glEnableClientState(GL_VERTEX_ARRAY);
 	GLfloat quadUVs[] = { u, v, u, v + height, u + width,
