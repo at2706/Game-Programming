@@ -41,8 +41,8 @@ GameEngine::GameEngine(){
 		enemy->rotating = true;
 		enemy->setPos(3.3f * ((float)rand() / (float)RAND_MAX) - 1.65f, 3.3f * ((float)rand() / (float)RAND_MAX) - 1.65f);
 		enemy->setMovement(1, 0.0f, 0.0f, 0.0f, 0.0f);
-		/*enemy->velocity_x = ((float)rand() / (float)RAND_MAX) - 0.5f;
-		enemy->velocity_y = ((float)rand() / (float)RAND_MAX) - 0.5f;*/
+		enemy->velocity_x = ((float)rand() / (float)RAND_MAX) - 0.5f;
+		enemy->velocity_y = ((float)rand() / (float)RAND_MAX) - 0.5f;
 		enemy->velocity_r = rand() % 60 - 50;
 		enemy->facing = rand() & 60 + 45;
 		enemy->scale_x = 2.5f;
