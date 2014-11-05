@@ -39,7 +39,7 @@ GameEngine::GameEngine(){
 		enemy = new Entity(astroids[(int)(rand() % 6)]);
 		enemy->enableGravity = false;
 		enemy->rotating = true;
-		enemy->setPos(3.3f * ((float)rand() / (float)RAND_MAX) - 1.65f, 3.3f * ((float)rand() / (float)RAND_MAX) - 1.65f);
+		enemy->setPos(3.1f * ((float)rand() / (float)RAND_MAX) - 1.4f, 3.1f * ((float)rand() / (float)RAND_MAX) - 1.4f);
 		enemy->setMovement(1, 0.0f, 0.0f, 0.0f, 0.0f);
 		/*enemy->velocity_x = ((float)rand() / (float)RAND_MAX) - 0.5f;
 		enemy->velocity_y = ((float)rand() / (float)RAND_MAX) - 0.5f;*/
