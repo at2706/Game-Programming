@@ -35,3 +35,10 @@
 #define MARGIN_RIGHT 0.1f
 
 using namespace std;
+
+struct Color{
+	float r;
+	float g;
+	float b;
+	float a;
+};

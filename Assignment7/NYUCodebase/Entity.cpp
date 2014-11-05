@@ -59,7 +59,7 @@ GLvoid Entity::worldToTileCoordinates(float worldX, float worldY, int *gridX, in
 Vector getEdgeVector(Vector v1, Vector v2){
 	return Vector(v2.x - v1.x, v2.y - v1.y, v2.z - v1.z);
 }
-bool lengthSortor(const Vector &v1, Vector &v2){
+bool lengthsorter(const Vector &v1, Vector &v2){
 	return v1.length() < v2.length();
 }
 
@@ -278,12 +278,18 @@ GLboolean Entity::collisionCheck(Entity *e){
 			return false;
 	}
 
-	sort(penetrations.begin(), penetrations.end(), lengthSortor);
+	sort(penetrations.begin(), penetrations.end(), lengthsorter);
 
-	x -= penetrations[0].x;
-	y -= penetrations[0].y;
+	x -= (penetrations[0].x - 0.0001f) / 2;
+	y -= (penetrations[0].y - 0.0001f) / 2;
 	velocity_x = enableBounce ? -velocity_x : 0.0f;
 	velocity_y = enableBounce ? -velocity_y : 0.0f;
+
+	e->x += (penetrations[0].x + 0.0001f) / 2;
+	e->y += (penetrations[0].y + 0.0001f) / 2;
+	e->velocity_x = e->enableBounce ? -e->velocity_x : 0.0f;
+	e->velocity_y = e->enableBounce ? -e->velocity_y : 0.0f;
+
 	/*
 	get all corners for A
 	get edges and normalize
