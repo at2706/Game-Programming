@@ -55,12 +55,6 @@ GLvoid Entity::worldToTileCoordinates(float worldX, float worldY, int *gridX, in
 	*gridX = (int)((worldX) / TILE_SIZE) + sprite->width;
 	*gridY = (int)((-worldY) / TILE_SIZE) + sprite->height;
 }
-//GLvoid setEdgeVectors(vector<Vector> &points, vector<Vector> &edges){
-//	top = Vector(tr.x - tl.x, tr.y - tl.y, 0.0);
-//	bot = Vector(br.x - bl.x, br.y - bl.y, 0.0);
-//	right = Vector(tr.x - br.x, tr.y - br.y, 0.0);
-//	left = Vector(tl.x - bl.x, tl.y - bl.y, 0.0);
-//}
 
 Vector getEdgeVector(Vector v1, Vector v2){
 	return Vector(v2.x - v1.x, v2.y - v1.y, v2.z - v1.z);
@@ -68,7 +62,6 @@ Vector getEdgeVector(Vector v1, Vector v2){
 bool lengthSortor(const Vector &v1, Vector &v2){
 	return v1.length() < v2.length();
 }
-
 
 GLvoid Entity::fixedUpdate(GameEngine *g){
 	collidedTop = false;
@@ -86,22 +79,21 @@ GLvoid Entity::fixedUpdate(GameEngine *g){
 			moveY();
 			//collisionPenY();
 			//tileCollisionY(g);
-			collisionAxis();
 			moveX();
 			//collisionPenX();
 			//tileCollisionX(g);
-			collisionAxis();
 		}
 		else{
 			decelerateY();
 			//collisionPenY();
 			//tileCollisionY(g);
-			collisionAxis();
 			decelerateX();
 			//collisionPenX();
 			//tileCollisionX(g);
-			collisionAxis();
 		}
+
+		collisionAxis();
+
 		if (enableGravity && !collidedBottom){
 			velocity_x += g->gravity_x * FIXED_TIMESTEP;
 			velocity_y += g->gravity_y * FIXED_TIMESTEP;
@@ -153,8 +145,8 @@ GLvoid Entity::moveX(){
 	GLfloat radian = (facing * PI) / 180.0f;
 	velocity_x += acceleration_x * FIXED_TIMESTEP * cos(radian);
 
-	if (velocity_x > speed * cos(radian)) velocity_x = speed * cos(radian);
-	else if (velocity_x < -speed * fabs(cos(radian))) velocity_x = -speed * fabs(cos(radian));
+	//if (velocity_x > speed * cos(radian)) velocity_x = speed * cos(radian);
+	//else if (velocity_x < -speed * fabs(cos(radian))) velocity_x = -speed * fabs(cos(radian));
 	x += velocity_x * FIXED_TIMESTEP;
 
 }
@@ -162,8 +154,8 @@ GLvoid Entity::moveY(){
 	GLfloat radian = (facing * PI) / 180.0f;
 	velocity_y += acceleration_y * FIXED_TIMESTEP * sin(radian);
 
-	if (velocity_y > speed * sin(radian)) velocity_y = speed * sin(radian);
-	else if (velocity_y < -speed * fabs(sin(radian))) velocity_y = -speed * fabs(sin(radian));
+	//if (velocity_y > speed * sin(radian)) velocity_y = speed * sin(radian);
+	//else if (velocity_y < -speed * fabs(sin(radian))) velocity_y = -speed * fabs(sin(radian));
 	y += velocity_y * FIXED_TIMESTEP;
 }
 GLvoid Entity::decelerateX(){
@@ -288,9 +280,10 @@ GLboolean Entity::collisionCheck(Entity *e){
 
 	sort(penetrations.begin(), penetrations.end(), lengthSortor);
 
-	x += penetrations[0].x;
-	y += penetrations[0].y;
-
+	x -= penetrations[0].x;
+	y -= penetrations[0].y;
+	velocity_x = enableBounce ? -velocity_x : 0.0f;
+	velocity_y = enableBounce ? -velocity_y : 0.0f;
 	/*
 	get all corners for A
 	get edges and normalize
