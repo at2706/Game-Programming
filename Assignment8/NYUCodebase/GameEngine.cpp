@@ -75,7 +75,8 @@ GLboolean GameEngine::ProcessEvents(){
 	switch (state){
 	case STATE_MAIN_MENU:
 		if (keys[SDL_SCANCODE_S]){
-			ball->setVelocity(2, 2);
+			ball->setVelocity(0, 0);
+			ball->isIdle = true;
 			state = STATE_GAME_LEVEL;
 		}
 	break;
@@ -158,8 +159,8 @@ GLvoid GameEngine::Render(){
 
 	switch (state){
 	case STATE_MAIN_MENU:
-		animationBValue = mapValue(ticks, 1.5f, 2.5f, 0.0f, 1.0f);
 		animationAValue = mapValue(ticks, 1.5f, 2.0f, 0.0f, 1.0f);
+		animationBValue = mapValue(ticks, 1.5f, 2.5f, 0.0f, 1.0f);
 
 		DrawText("PONG", 0.2f, 0.0f, 0.0f, easeOutElastic(1.5f, 0.5f, animationBValue), 1.0f, 1.0f, 1.0f, 1.0f);
 		DrawText("START", 0.1f, 0.0f, easeInOut(-1.6f, 0.0f, animationAValue), 0.0f, 1.0f, 1.0f, 1.0f, 1.0f);
@@ -171,10 +172,11 @@ GLvoid GameEngine::Render(){
 		if (screenShakeValue <= screenShakeDuration / 2)
  			animationAValue = mapValue(screenShakeValue, 0.0, screenShakeDuration / 2, 0.0f, 0.5f);
 		else animationAValue = mapValue(screenShakeValue, screenShakeDuration, screenShakeDuration / 2, 0.5f, 0.0f);
-		glTranslatef(sin(animationAValue * screenShakeSpeed)* screenShakeIntensity, 0.0f, 0.0f);
+		glTranslatef(sin(animationAValue * screenShakeSpeed) * screenShakeIntensity, 0.0f, 0.0f);
 		Entity::drawAll();
 
 		glLoadIdentity();
+		drawBlackBox(0.8f);
 		DrawText("SCORE", 0.1f, 0.0f, 0.0f, 0.9f, 1.0f, 1.0f, 1.0f, 1.0f);
 		DrawText(to_string(score1), 0.1f, 0.0f, -0.65f, 0.9f, 1.0f, 1.0f, 1.0f, 1.0f);
 		DrawText(to_string(score2), 0.1f, 0.0f, 0.65f, 0.9f, 1.0f, 1.0f, 1.0f, 1.0f);
@@ -465,4 +467,24 @@ GLvoid GameEngine::drawPlatformHorizontal(GLfloat length, GLfloat x, GLfloat y){
 		platform = new Entity(sprite, (i * sprite->width) + x, y);
 		platform->isStatic = true;
 	}
+}
+
+GLvoid GameEngine::drawBlackBox(float alpha) {
+	glMatrixMode(GL_MODELVIEW);
+	glEnable(GL_BLEND);
+
+
+	glLoadIdentity();
+	GLfloat quad3[] = { -1.6f, 1.0f, -1.6f, -1.0f, 1.6f, -1.0f, 1.6f, 1.0f };
+	glVertexPointer(2, GL_FLOAT, 0, quad3);
+	glEnableClientState(GL_VERTEX_ARRAY);
+
+	GLfloat blackBox[] = { 0.0f, 0.0f, 0.0f, alpha, 0.0f, 0.0f, 0.0f, alpha, 0.0f, 0.0f, 0.0f, alpha, 0.0f, 0.0f, 0.0f, alpha };
+	glColorPointer(4, GL_FLOAT, 0, blackBox);
+	glEnableClientState(GL_COLOR_ARRAY);
+
+	glDrawArrays(GL_QUADS, 0, 4);
+
+	glDisableClientState(GL_COLOR_ARRAY);
+	glDisableClientState(GL_VERTEX_ARRAY);
 }

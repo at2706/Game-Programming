@@ -43,6 +43,7 @@ private:
 	GLboolean isSolidTile(unsigned char t);
 		
 	GLvoid drawPlatformHorizontal(GLfloat length, GLfloat x, GLfloat y);
+	GLvoid drawBlackBox(GLfloat alpha);
 
 	GLvoid reset();
 	
