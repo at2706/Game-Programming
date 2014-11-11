@@ -48,9 +48,6 @@ GLvoid Entity::drawAll(){
 	for (vector<Entity*>::iterator it = entities.begin(); it != entities.end(); ++it)
 		(*it)->draw();
 }
-GLfloat Entity::lerp(GLfloat v0, GLfloat v1, GLfloat t) {
-	return (1.0f - t)*v0 + t*v1;
-}
 GLvoid Entity::worldToTileCoordinates(float worldX, float worldY, int *gridX, int *gridY) {
 	*gridX = (int)((worldX) / TILE_SIZE) + sprite->width;
 	*gridY = (int)((-worldY) / TILE_SIZE) + sprite->height;
@@ -585,7 +582,6 @@ GLvoid Entity::collisionAxis(GameEngine *g){
 	vector<Entity*>::iterator end = entities.end();
 	for (vector<Entity*>::iterator it2 = entities.begin(); it2 != end; ++it2){
 		if (this != (*it2) && collisionCheck((*it2))){
-			//g->screenShakeStart = g->ticks;
 			g->screenShakeDuration = 0.5f;
 			g->screenShakeValue = 0.0f;
 		}

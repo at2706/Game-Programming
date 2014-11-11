@@ -43,6 +43,7 @@ struct Color{
 	float a;
 };
 
+
 inline float mapValue(float value, float srcMin, float srcMax, float dstMin, float dstMax) {
 	float retVal = dstMin + ((value - srcMin) / (srcMax - srcMin) * (dstMax - dstMin));
 	if (retVal < dstMin) {
@@ -52,4 +53,30 @@ inline float mapValue(float value, float srcMin, float srcMax, float dstMin, flo
 		retVal = dstMax;
 	}
 	return retVal;
+}
+
+inline float lerp(GLfloat v0, GLfloat v1, GLfloat t) {
+	return (1.0f - t)*v0 + t*v1;
+}
+
+
+inline float easeInOut(float from, float to, float time) {
+	float tVal;
+	if (time > 0.5) {
+		float oneMinusT = 1.0f - ((0.5f - time)*-2.0f);
+		tVal = 1.0f - ((oneMinusT * oneMinusT * oneMinusT * oneMinusT *
+			oneMinusT) * 0.5f);
+	}
+	else {
+		time *= 2.0;
+		tVal = (time*time*time*time*time) / 2.0;
+	}
+	return (1.0f - tVal)*from + tVal*to;
+}
+
+inline float easeOutElastic(float from, float to, float time) {
+	float p = 0.3f;
+	float s = p / 4.0f;
+	float diff = (to - from);
+	return from + diff + (diff*pow(2.0f, -10.0f*time) * sin((time - s)*(2 * PI) / p));
 }

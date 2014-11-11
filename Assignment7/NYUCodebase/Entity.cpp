@@ -68,8 +68,6 @@ GLvoid Entity::fixedUpdate(GameEngine *g){
 	collidedBottom = false;
 	collidedLeft = false;
 	collidedRight = false;
-	msg1 = "false";
-	msg2 = "false";
 	if (!isStatic){
 
 		if (rotating) moveR();

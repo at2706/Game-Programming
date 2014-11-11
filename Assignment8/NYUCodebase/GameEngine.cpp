@@ -40,6 +40,7 @@ GameEngine::GameEngine(){
 	ball->facing = rand() % 30 + 40;
 	ball->isIdle = false;
 	ball->enableBounce = true;
+	ball->setScale(2, 2);
 
 	/*//<SubTexture name="green_panel.png" x="190" y="94" width="100" height="100"/>
 	sprite = new SheetSprite(UISheet, 190.0f / 512, 94.0f / 256, 100.0f / 512, 100.0f / 256);
@@ -51,7 +52,7 @@ GameEngine::GameEngine(){
 	UImain->attach(ele);*/
 
 	screenShakeStart = 0.0f;
-	screenShakeDuration = 0.0f;
+	screenShakeDuration = 0.5f;
 }
 
 GameEngine::~GameEngine(){
@@ -152,16 +153,23 @@ GLvoid GameEngine::Render(){
 	GLfloat screenShakeSpeed = 15;
 	GLfloat screenShakeIntensity = 0.04f;
 
+	float animationAValue;
+	float animationBValue;
+
 	switch (state){
 	case STATE_MAIN_MENU:
-		DrawText("START", 0.1f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f);
-		break;
+		animationBValue = mapValue(ticks, 1.5f, 2.5f, 0.0f, 1.0f);
+		animationAValue = mapValue(ticks, 1.5f, 2.0f, 0.0f, 1.0f);
+
+		DrawText("PONG", 0.2f, 0.0f, 0.0f, easeOutElastic(1.5f, 0.5f, animationBValue), 1.0f, 1.0f, 1.0f, 1.0f);
+		DrawText("START", 0.1f, 0.0f, easeInOut(-1.6f, 0.0f, animationAValue), 0.0f, 1.0f, 1.0f, 1.0f, 1.0f);
+	break;
 	case STATE_GAME_LEVEL:
 
 		screenShakeValue += elapsed;
 		float animationAValue;
-		if (screenShakeValue <= screenShakeDuration)
-			animationAValue = mapValue(screenShakeValue, 0.0, screenShakeDuration / 2, 0.0f, 0.5f);
+		if (screenShakeValue <= screenShakeDuration / 2)
+ 			animationAValue = mapValue(screenShakeValue, 0.0, screenShakeDuration / 2, 0.0f, 0.5f);
 		else animationAValue = mapValue(screenShakeValue, screenShakeDuration, screenShakeDuration / 2, 0.5f, 0.0f);
 		glTranslatef(sin(animationAValue * screenShakeSpeed)* screenShakeIntensity, 0.0f, 0.0f);
 		Entity::drawAll();
@@ -170,7 +178,7 @@ GLvoid GameEngine::Render(){
 		DrawText("SCORE", 0.1f, 0.0f, 0.0f, 0.9f, 1.0f, 1.0f, 1.0f, 1.0f);
 		DrawText(to_string(score1), 0.1f, 0.0f, -0.65f, 0.9f, 1.0f, 1.0f, 1.0f, 1.0f);
 		DrawText(to_string(score2), 0.1f, 0.0f, 0.65f, 0.9f, 1.0f, 1.0f, 1.0f, 1.0f);
-		break;
+	break;
 
 	case STATE_GAME_OVER:
 

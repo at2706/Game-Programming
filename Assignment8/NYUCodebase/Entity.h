@@ -10,7 +10,6 @@ public:
 
 	GLvoid draw();
 	virtual GLvoid fixedUpdate(GameEngine *g);
-	GLfloat lerp(GLfloat v0, GLfloat v1, GLfloat t);
 	GLvoid buildMatrix();
 	GLvoid worldToTileCoordinates(GLfloat worldX, GLfloat worldY, GLint *gridX, GLint *gridY);
 

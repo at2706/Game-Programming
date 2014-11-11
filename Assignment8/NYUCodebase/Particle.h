@@ -11,6 +11,7 @@ public:
 	Vector velocity;
 	float lifetime;
 	float rotation;
+	float sizeDeviation;
 	Color colorDeviation;
 	//lerp from start to end color
 };
