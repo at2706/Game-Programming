@@ -6,8 +6,7 @@
 #define MAX_ENEMIES 5
 #define MAX_BULLETS 15
 
-class GameEngine
-{
+class GameEngine{
 public:
 	GameEngine();
 	~GameEngine();
