@@ -28,10 +28,9 @@ Entity::Entity(SheetSprite *sheet, GLfloat posX, GLfloat posY,
 	collidedRight = false;
 
 	entities.push_back(this);
-	id = entities.end();
 }
 
-Entity::~Entity(){ entities.erase(id); }
+Entity::~Entity(){ entities.erase(find(entities.begin(), entities.end(), this)); }
 GLvoid Entity::draw(){
 	if (isVisible){
 		buildMatrix();
